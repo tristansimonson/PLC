@@ -64,86 +64,88 @@
 %%
 
 /*  Add production rules below */
-Main:
-  LetExpr EOF  { $1 }
+
+Prog :
+    <expr> 
+  | <decl> ; <prog>
 ;
 
-LetExpr:
-    Expr                                         { $1                     }
-  | VAR NAME EQ Expr SEMIC LetExpr               { Let ($2, $4, $6)       }
-  | FUN NAME Args RetType EQ Expr SEMIC LetExpr  { makeFun $2 $3 $4 $6 $8 }
+Decl :
+    var <name> = <expr>
+  | fun <name> <args> = <expr>
+  | fun rec <name> <args> : <type> = <expr>
 ;
 
-RetType:
-  COLON Type  { $2 }
-;
+Expr :
+    <atomic expr> atomic expression
+  | <app expr> function application
+  | if <expr> then <expr> else <expr> conditional expression
+  | match <expr> with <matchexpr> match expression
+  | ! <expr> unary operator application
+  | - <expr>
+  | hd <expr>
+  | tl <expr>
+  | ise <expr>
+  | print <expr>
+  | <expr> + <expr> binary operator application
+  | <expr> - <expr>
+  | <expr> * <expr>
+  | <expr> / <expr>
+  | <expr> = <expr>
+  | <expr> != <expr>
+  | <expr> < <expr>
+  | <expr> <= <expr>
+  | <expr> :: <expr>
+  | <expr> ; <expr>
+  | <expr> [ <nat> ]
 
+AtomicExpr :
+    <const> constant literal
+  | <name> function, variable or parameter name
+  | { <prog> } local scope block
+  | ( <expr> ) parenthesized expression
+  | ( <comps> ) list
+  | fn <args> => <expr> end anonymous function
 
-Args:
-    LPAR RPAR                { []       }
-  | Arg                      { [$1]     }
-  | Arg COMMA Args           { $1 :: $3 }
-  | LPAR Arg COMMA Args RPAR { $2 :: $4 }
-  | LPAR Arg RPAR            { [$2]     }
-;
+AppExpr : function application
+    <atomic expr> <atomic expr>
+  | <app expr> <atomic expr>
 
-Arg:
-    Type NAME { $1, $2 }
-;
+Const :
+    true 
+  | false
+  | <nat> numerals
+  | ( ) unit value
+  | ( <type> [ ] ) type-annotated empty sequence
 
-Type:
-    AtType              { $1       }
-  | ListType            { ListT $1 }
-;
+Comps : list components
+    <expr> , <expr>
+  | <expr> , <comps>
 
-AtType:
-    INT             { IntT     }
-  | BOOL            { BoolT    }
-  | NIL             { ListT [] }
-  | LPAR Type RPAR  { $2       }
-;
+MatchExpr : match cases
+    end
+  | ‘|’ <condexpr> -> <expr> <matchexpr>
 
-ListType:
-  | AtType COMMA AtType    { [$1; $3] }
-  | AtType COMMA ListType  { $1 :: $3 }
-;
+CondExpr : values to be matched against
+    <expr>
+  | ‘_’
 
-Expr:
-    AtExpr                       { $1                    }
-  | AppExpr                      { $1                    }
-  | IF Expr THEN Expr ELSE Expr  { If ($2, $4, $6)       }
-  | MINUS Expr                   { Prim1 ("-", $2)       }
-  | NOT   Expr                   { Prim1 ("!", $2)       }
-  | Expr PLUS  Expr              { Prim2 ("+",  $1, $3)  }
-  | Expr MINUS Expr              { Prim2 ("-",  $1, $3)  }
-  | Expr TIMES Expr              { Prim2 ("*",  $1, $3)  }
-  | Expr DIV   Expr              { Prim2 ("/",  $1, $3)  }
-  | Expr EQ    Expr              { Prim2 ("=",  $1, $3)  }
-  | Expr NE    Expr              { Prim2 ("<>", $1, $3)  }
-  | Expr LT    Expr              { Prim2 ("<",  $1, $3)  }
-  | Expr LBRACK CSTINT RBRACK    { Item ($3, $1)         }
-;
+Args : function arguments
+    ( )
+  | ...
 
-AtExpr:
-    Const              { $1       }
-  | NAME               { Var $1   }
-  | LBRA LetExpr RBRA  { $2       }
-  | LPAR Expr RPAR     { $2       }
-  | LPAR RPAR          { List [] }
-  | LPAR Comps RPAR    { List $2 }
-;
+Type :
+    <atomic type>
+  | ( <types> ) list type
+  | [ <type> ] sequence type
+  | <type> -> <type> function type
 
-Comps:
-    Expr COMMA Expr   { [$1; $3] }
-  | Expr COMMA Comps  { $1 :: $3 }
-;
+AtomicType :
+    Nil Nil type
+  | Bool Boolean type
+  | Int integer type
+  | ( <type> )
 
-AppExpr:
-    AtExpr AtExpr   { Call ($1, $2) }
-  | AppExpr AtExpr  { Call ($1, $2) }
-;
-
-Const:
-    CSTINT   { CstI ($1) }
-  | CSTBOOL  { CstB ($1) }
-;
+Types :
+    <type> , <type>
+  | <type> , <types>
