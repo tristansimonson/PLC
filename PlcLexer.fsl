@@ -51,6 +51,7 @@ rule Token = parse
   | "<="            { LTE }
   | "&&"            { AND }
   | "->"            { ARROW }
+  | "=>"            { DARROW }
   | '='             { EQ }
   | '!'             { NOT }
   | '<'             { LT }
