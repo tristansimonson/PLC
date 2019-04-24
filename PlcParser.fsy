@@ -77,48 +77,48 @@ Decl :
 ;
 
 Expr :
-    AtomicExpr                                       atomic expression
-  | AppExpr                                          function application
-  | IF Expr THEN Expr ELSE Expr                      conditional expression
-  | MATCH Expr WITH MatchExpr                        match expression
-  | NOT Expr                     { Prim1("!", $2) }                    unary operator application
-  | MINUS Expr                   { Prim1("-", $2) }
+    AtomicExpr                   { $1 }               atomic expression
+  | AppExpr                      { $1 }               function application
+  | IF Expr THEN Expr ELSE Expr  { If ($2, $4, $6) }                    conditional expression
+  | MATCH Expr WITH MatchExpr    { Match ($2, $4)  }                   match expression
+  | NOT Expr                     { Prim1 ("!", $2) }                    unary operator application
+  | MINUS Expr                   { Prim1 ("-", $2) }
   | HEAD Expr
   | TAIL Expr
   | ISE Expr
   | PRINT Expr
-  | Expr PLUS Expr               { Prim2("+", $1, $3) }                   binary operator application
-  | Expr MINUS Expr              { Prim2("-", $1, $3) }
-  | Expr TIMES Expr              { Prim2("*", $1, $3) }
-  | Expr DIV Expr                { Prim2("/", $1, $3) }
-  | Expr EQ Expr                 { Prim2("=", $1, $3) }
-  | Expr NEQ Expr                { Prim2("!=", $1, $3) }
-  | Expr LT Expr                 { Prim2("<", $1, $3) }
-  | Expr LTE Expr                { Prim2("<=", $1, $3) }
+  | Expr PLUS Expr               { Prim2 ("+", $1, $3) }                   binary operator application
+  | Expr MINUS Expr              { Prim2 ("-", $1, $3) }
+  | Expr TIMES Expr              { Prim2 ("*", $1, $3) }
+  | Expr DIV Expr                { Prim2 ("/", $1, $3) }
+  | Expr EQ Expr                 { Prim2 ("=", $1, $3) }
+  | Expr NEQ Expr                { Prim2 ("!=", $1, $3) }
+  | Expr LT Expr                 { Prim2 ("<", $1, $3) }
+  | Expr LTE Expr                { Prim2 ("<=", $1, $3) }
   | Expr CONS Expr
   | Expr SEMIC Expr
   | Expr LBRACK Const RBRACK                         Const is Nat might need to add case for that
 ;
 
 AtomicExpr :
-    Const                               {    }       constant literal
-  | NAME                                {    }       function, variable or parameter name
-  | LBRACK Prog RBRACK                  {    }       local scope block
-  | LPAR Expr RPAR                      {    }       parenthesized expression
-  | LPAR Comps RPAR                     {    }       list
-  | FN Args DARROW Expr END             {    }       anonymous function
+    Const                               { $1      }       constant literal
+  | NAME                                { Var $1  }       function, variable or parameter name
+  | LBRACK Prog RBRACK                  {         }       local scope block
+  | LPAR Expr RPAR                      {         }       parenthesized expression
+  | LPAR Comps RPAR                     { List $2 }       list
+  | FN Args DARROW Expr END             {         }       anonymous function
 ;
 
 AppExpr :                                            function application
-    AtomicExpr AtomicExpr               {    }
-  | AppExpr AtomicExpr                  {    }
+    AtomicExpr AtomicExpr               { Call ($1, $2) }
+  | AppExpr AtomicExpr                  { Call ($1, $2) }
 ;
 
 Const :
-    CSTBOOL                             {    }           combined true and false which I think is fine
-  | CSTINT                              {    }           numerals NAT? need to add NAT to parser or is it CSTINT?
-  | LPAR RPAR                           { [] }           unit value
-  | LPAR Type LBRACK RBRACK RPAR        {    }           type-annotated empty sequence
+    CSTBOOL                             { CONB ($1) }           combined true and false which I think is fine
+  | CSTINT                              { CONI ($1) }           numerals NAT? need to add NAT to parser or is it CSTINT?
+  | LPAR RPAR                           { List []   }           unit value
+  | LPAR Type LBRACK RBRACK RPAR        { ($2 [])   }           type-annotated empty sequence
 ;
 
 Comps :                                       list components
@@ -145,7 +145,7 @@ Args:                                         function arguments
 ;
 
 Arg:
-    Type NAME { $1, $2 }
+    Type NAME                { $1, $2 }
 ;
 
 Type :
@@ -156,10 +156,10 @@ Type :
 ;
 
 AtomicType :
-    NIL                                       Nil type
-  | BOOL                                      Boolean type
-  | INT                                       integer type
-  | LPAR Type RPAR
+    NIL                 { ListT [] }                      Nil type
+  | BOOL                { BoolT    }                     Boolean type
+  | INT                 { IntT     }                     integer type
+  | LPAR Type RPAR      { $2       }
 ;
 
 Types :
