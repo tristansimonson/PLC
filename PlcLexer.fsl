@@ -22,10 +22,19 @@ let keyword s =
     | "then"  -> THEN
     | "var"  -> VAR
     | "fun"  -> FUN
+	| "fn"   -> FN
     | "true"  -> CSTBOOL true
     | "Int"  -> INT
     | "Bool"  -> BOOL
     | "Nil"  -> NIL
+	| "print" -> PRINT
+	| "end"   -> END
+	| "rec"   -> REC
+	| "match" -> MATCH
+	| "with"  -> WITH
+	| "hd"    -> HEAD
+	| "tl"    -> TAIL
+	| "ise"   -> ISE
     | _       -> NAME s
 }
 
@@ -38,14 +47,19 @@ rule Token = parse
   | "(*"            { commentStart := lexbuf.StartPos;
                       commentDepth := 1;
                       SkipComment lexbuf; Token lexbuf }
+  | "!="            { NEQ }
+  | "<="            { LTE }
+  | "&&"            { AND }
+  | "->"            { ARROW }
   | '='             { EQ }
-  | "<>"            { NE }
   | '!'             { NOT }
   | '<'             { LT }
   | '+'             { PLUS }
   | '-'             { MINUS }
+  | '_'             { UNDERSCORE }
   | '*'             { TIMES }
   | '/'             { DIV }
+  | '|'             { PIPE }
   | '('             { LPAR }
   | ')'             { RPAR }
   | '{'             { LBRA }
@@ -54,6 +68,7 @@ rule Token = parse
   | ']'             { RBRACK }
   | ';'             { SEMIC }
   | ','             { COMMA }
+  | "::"            { CONS }
   | ':'             { COLON }
   | eof             { EOF }
   | _               { failwith "Lexer error: illegal symbol" }

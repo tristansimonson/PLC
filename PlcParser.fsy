@@ -71,7 +71,7 @@ Main :
 ;
 
 Prog :
-    Expr SEMIC Prog               {                       }       /*not sure if supposed to be two matches (see pdf)*/
+    Expr                          {                       }       /*not sure if supposed to be two matches (see pdf)*/
   | Decl SEMIC Prog               {                       } 
 ;
 
