@@ -71,12 +71,12 @@ Main :
 ;
 
 Prog :
-    Expr                          { $1                    }       /*not sure if supposed to be two matches (see pdf)*/
-  | Decl SEMIC Prog               { $1; $3                }                              
+    Expr SEMIC Prog               {                       }       /*not sure if supposed to be two matches (see pdf)*/
+  | Decl SEMIC Prog               {                       } 
 ;
 
 Decl :
-    VAR NAME EQ Expr                        {          }                       
+    VAR NAME EQ Expr                        {                     }                       
   | FUN NAME Args EQ Expr                   { Let ($2, $3, $5)    }            
   | FUN REC NAME Args COLON Type EQ Expr    { makeFun $3 $4 $6 $8 }       
 ;
@@ -141,16 +141,18 @@ CondExpr :                                    /*values to be matched against*/
   | UNDERSCORE               { None      }    /*in 4.2 of pdf _ is None*/
 ;
 
-Args:                                         /*function arguments*/
-    LPAR RPAR                { []       }     /*imported directly from hw6 might need to change*/
-  | Arg                      { [$1]     }
-  | Arg COMMA Args           { $1 :: $3 }
-  | LPAR Arg COMMA Args RPAR { $2 :: $4 }
-  | LPAR Arg RPAR            { [$2]     }
+Args:
+    LPAR RPAR           { []   }
+  | LPAR Params RPAR    { $2   }      
 ;
 
-Arg:
-    Type NAME                { $1, $2 }
+Params:
+    TypedVar                 { $1 :: [] } 
+  | TypedVar COMMA Params    { $1 :: $3 } 
+;
+
+TypedVar:
+    Type NAME  { ($1, $2) } 
 ;
 
 Type :
