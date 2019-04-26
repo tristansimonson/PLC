@@ -59,35 +59,40 @@
 %left LBRACK
 
 %start Main
-%type <Absyn.expr> Main
+%type <Absyn.expr> Main Expr AtomicExpr Const
+%type <Absyn.expr> AppExpr
 
 %%
 
 /*  Add production rules below */
 
+Main :
+    Prog EOF                     { $1      }
+;
+
 Prog :
-    Expr                         { $1        }
-  | Decl SEMIC Prog              {  $1 ; $3  }       //Not very sure about this one
+    Expr                         { $1      }
+  | Decl SEMIC Prog              { $1 ; $3 }                               /*Not very sure about this one*/
 ;
 
 Decl :
-    VAR NAME EQ Expr                        { ? }                   //Probably need to use functions in PlcParser for these
-  | FUN NAME Args EQ Expr                   { Let ($2, $3, $5) }            
-  | FUN REC NAME Args COLON Type EQ Expr    { makeFun $3 $4 $6 $8 } //has 6 arguments in absyn
+    VAR NAME EQ Expr SEMIC Expr             { Let ($2, $4, $6)    }        /*Probably need to use functions in PlcParser for these*/
+  | FUN NAME Args EQ Expr                   { Let ($2, $3, $5)    }            
+  | FUN REC NAME Args COLON Type EQ Expr    { makeFun $3 $4 $6 $8 }        /*has 6 arguments in absyn*/
 ;
 
 Expr :
-    AtomicExpr                   { $1                   }                  //atomic expression
-  | AppExpr                      { $1                   }                  //function application
-  | IF Expr THEN Expr ELSE Expr  { If ($2, $4, $6)      }                  //conditional expression
-  | MATCH Expr WITH MatchExpr    { Match ($2, $4)       }                  //match expression
-  | NOT Expr                     { Prim1 ("!", $2)      }                  //unary operator application
+    AtomicExpr                   { $1                   }                  /*atomic expression*/
+  | AppExpr                      { $1                   }                  /*function application*/
+  | IF Expr THEN Expr ELSE Expr  { If ($2, $4, $6)      }                  /*conditional expression*/
+  | MATCH Expr WITH MatchExpr    { Match ($2, $4)       }                  /*match expression*/
+  | NOT Expr                     { Prim1 ("!", $2)      }                  /*unary operator application*/
   | MINUS Expr                   { Prim1 ("-", $2)      }
   | HEAD Expr                    { Prim1 ("head", $2)   }
   | TAIL Expr                    { Prim1 ("tail", $2)   }
   | ISE Expr                     { Prim1 ("ise", $2)    }
   | PRINT Expr                   { Prim1 ("print", $2)  }
-  | Expr PLUS Expr               { Prim2 ("+", $1, $3)  }                  //binary operator application
+  | Expr PLUS Expr               { Prim2 ("+", $1, $3)  }                  /*binary operator application*/
   | Expr MINUS Expr              { Prim2 ("-", $1, $3)  }
   | Expr TIMES Expr              { Prim2 ("*", $1, $3)  }
   | Expr DIV Expr                { Prim2 ("/", $1, $3)  }
@@ -97,19 +102,19 @@ Expr :
   | Expr LTE Expr                { Prim2 ("<=", $1, $3) }
   | Expr CONS Expr               { Prim2 ("::", $1, $3) }
   | Expr SEMIC Expr              { Prim2 (";", $1, $3)  }
-  | Expr LBRACK Const RBRACK     { Item ($1, $3)        }                  //Const is Nat might need to add case for that
+  | Expr LBRACK Const RBRACK     { Item ($1, $3)        }                  /*Const is Nat might need to add case for that*/
 ;
 
 AtomicExpr :
-    Const                               { $1             }         //constant literal
-  | NAME                                { Var $1         }         //function, variable or parameter name
-  | LBRACK Prog RBRACK                  { [$2]           }         //local scope block ?
-  | LPAR Expr RPAR                      { ($2)           }         //parenthesized expression ?
-  | LPAR Comps RPAR                     { List $2        }         //list
-  | FN Args DARROW Expr END             { makeAnon $2 $4 }         //anonymous function
+    Const                               { $1             }         /*constant literal*/
+  | NAME                                { Var $1         }         /*function, variable or parameter name*/
+  | LBRACK Prog RBRACK                  { [$2]           }         /*local scope block ?*/
+  | LPAR Expr RPAR                      { ($2)           }         /*parenthesized expression ?*/
+  | LPAR Comps RPAR                     { List $2        }         /*list*/
+  | FN Args DARROW Expr END             { makeAnon $2 $4 }         /*anonymous function*/
 ;
 
-AppExpr :                                                          //function application
+AppExpr :                                                          /*function application*/
     AtomicExpr AtomicExpr               { Call ($1, $2) }
   | AppExpr AtomicExpr                  { Call ($1, $2) }
 ;
@@ -117,27 +122,27 @@ AppExpr :                                                          //function ap
 Const :
     CSTBOOL                             { ConB ($1)    }           
   | CSTINT                              { ConI ($1)    }           
-  | LPAR RPAR                           { List []      }           //unit value
-  | LPAR Type LBRACK RBRACK RPAR        { ESeq ($2 []) }           //type-annotated empty sequence
+  | LPAR RPAR                           { List []      }           /*unit value*/
+  | LPAR Type LBRACK RBRACK RPAR        { ESeq ($2 []) }           /*type-annotated empty sequence*/
 ;
 
-Comps :                                                            //list components
+Comps :                                                            /*list components*/
     Expr COMMA Expr         { [$1; $3] }
   | Expr COMMA Comps        { $1 :: $3 }
 ;
 
-MatchExpr :                                                        //match cases
+MatchExpr :                                                        /*match cases*/
     END                                {                    }
-  | PIPE CondExpr ARROW Expr MatchExpr { [($2), $4] :: [$5] }      //the brackets are probably wrong
+  | PIPE CondExpr ARROW Expr MatchExpr { [($2), $4] :: [$5] }      /*the brackets are probably wrong*/
 ;
 
-CondExpr :                                    //values to be matched against
-    EXPR                     { Some ($1) }    //this might be wrong
-  | UNDERSCORE               { None      }    //in 4.2 of pdf _ is None
+CondExpr :                                    /*values to be matched against*/
+    Expr                     { Some ($1) }    /*this might be wrong*/
+  | UNDERSCORE               { None      }    /*in 4.2 of pdf _ is None*/
 ;
 
-Args:                                         //function arguments
-    LPAR RPAR                { []       }     //imported directly from hw6 might need to change
+Args:                                         /*function arguments*/
+    LPAR RPAR                { []       }     /*imported directly from hw6 might need to change*/
   | Arg                      { [$1]     }
   | Arg COMMA Args           { $1 :: $3 }
   | LPAR Arg COMMA Args RPAR { $2 :: $4 }
@@ -149,19 +154,20 @@ Arg:
 ;
 
 Type :
-    AtomicType
-  | LPAR Types RPAR          { ListT ($2)    }                 //list type
-  | LBRACK Type RBRACK       { SeqT ($2)     }                 //sequence type
-  | Type ARROW Type          { FunT ($1, $2) }                 //function type
+    AtomicType               { $1            }
+  | LPAR Types RPAR          { ListT ($2)    }                 /*list type*/
+  | LBRACK Type RBRACK       { SeqT ($2)     }                 /*sequence type*/
+  | Type ARROW Type          { FunT ($1, $2) }                 /*function type*/
 ;
 
 AtomicType :
-    NIL                 { ListT [] }                     //Nil type
-  | BOOL                { BoolT    }                     //Boolean type
-  | INT                 { IntT     }                     //integer type
+    NIL                 { ListT [] }                     /*Nil type*/
+  | BOOL                { BoolT    }                     /*Boolean type*/
+  | INT                 { IntT     }                     /*integer type*/
   | LPAR Type RPAR      { $2       }
 ;
 
 Types :
     Type COMMA Type         { [$1; $3] }
-  | Type COMMA Types        { $1 :: $3 }                 //might need to make $3 -> [$3];
+  | Type COMMA Types        { $1 :: $3 }
+;
