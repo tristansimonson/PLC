@@ -48,6 +48,7 @@ rule Token = parse
                       commentDepth := 1;
                       SkipComment lexbuf; Token lexbuf }
   | "!="            { NEQ }
+  | "=>"            { DARROW }
   | "<="            { LTE }
   | "&&"            { AND }
   | "->"            { ARROW }
@@ -62,8 +63,8 @@ rule Token = parse
   | '|'             { PIPE }
   | '('             { LPAR }
   | ')'             { RPAR }
-  | '{'             { LBRA }
-  | '}'             { RBRA }
+  | '{'             { LBRACE }
+  | '}'             { RBRACE }
   | '['             { LBRACK }
   | ']'             { RBRACK }
   | ';'             { SEMIC }
