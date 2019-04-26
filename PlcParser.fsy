@@ -67,18 +67,18 @@
 /*  Add production rules below */
 
 Main :
-    Prog EOF                     { $1      }
+    Prog EOF                                { $1                  }
 ;
 
 Prog :
-    Expr                         { $1      }
-  | Decl SEMIC Prog              { $1 ; $3 }                               /*Not very sure about this one*/
+    Expr                          { $1                    }       /*not sure if supposed to be two matches (see pdf)*/
+  | Decl SEMIC Prog               { $1; $3                }                              
 ;
 
 Decl :
-    VAR NAME EQ Expr SEMIC Expr             { Let ($2, $4, $6)    }        /*Probably need to use functions in PlcParser for these*/
+    VAR NAME EQ Expr                        { Var $2 = $4         }                       
   | FUN NAME Args EQ Expr                   { Let ($2, $3, $5)    }            
-  | FUN REC NAME Args COLON Type EQ Expr    { makeFun $3 $4 $6 $8 }        /*has 6 arguments in absyn*/
+  | FUN REC NAME Args COLON Type EQ Expr    { makeFun $3 $4 $6 $8 }       
 ;
 
 Expr :
@@ -108,7 +108,7 @@ Expr :
 AtomicExpr :
     Const                               { $1             }         /*constant literal*/
   | NAME                                { Var $1         }         /*function, variable or parameter name*/
-  | LBRACK Prog RBRACK                  { [$2]           }         /*local scope block ?*/
+  | LBRACE Prog RBRACE                  { {$2}           }         /*local scope block ?*/
   | LPAR Expr RPAR                      { ($2)           }         /*parenthesized expression ?*/
   | LPAR Comps RPAR                     { List $2        }         /*list*/
   | FN Args DARROW Expr END             { makeAnon $2 $4 }         /*anonymous function*/
