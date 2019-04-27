@@ -72,13 +72,17 @@ Main :
 
 Prog :
     Expr                          { $1                                }   
-  | Decl SEMIC Prog               { let (f, s) = $1 in Let (f, s, $3) } 
+  | Decl SEMIC Prog               { match $1 with 
+                                    | _, Letrec _ -> let (v, a, t, e) = $1 in (makeFun v a t (List [e; $3])) 
+                                    | _, Let _ -> let (v, e1, e2) = $1 in Let (v, e1, List [e2; $3]) 
+                                    | _, _ -> let (v, e) = $1 in Let (v, e, $3) 
+                                  } 
 ;
 
 Decl :
     VAR NAME EQ Expr                        { $2, $4                  }                       
-  | FUN NAME Args EQ Expr                   { $2, Let ($2, $3, $5)    }  /*change this*/          
-  | FUN REC NAME Args COLON Type EQ Expr    { $3, makeFun $3 $4 $6 $8 }  /*and this*/      
+  | FUN NAME Args EQ Expr                   { ($2, $3, $5), Let ($2, $3, $5) }  /*change this*/          
+  | FUN REC NAME Args COLON Type EQ Expr    { ($3, $4, $6, $8), makeFun $3 $4 $6 $8 }  /*and this*/      
 ;
 
 Expr :
