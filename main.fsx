@@ -22,143 +22,83 @@ let run e = printfn "\nResult is  %s\n" (Plc.run e)   // execution function
 (* Examples in concrete syntax *)
 
 let e1 = Parse.fromString "
-fun next(Int y): Int = y + 1;
-next(6) = 7
+15
 "
 run e1
 
 let e1 = fromString "
-fun next(Int y):Int = y + 1;
-next(next(6))
+true
 "
 run e1
 
 let e1 = fromString "
-fun add (): (Int, Int) = (5, 1-4);
-add()
+()
 "
 run e1
 
 let e1 = fromString "
-fun g (): (Int, Int, (Int, Int)) = (5, 1-4, (5,5));
-g()
+(6, false)[1]
 "
 run e1
 
 let e1 = fromString "
-fun add (Int x,Int y):Int = y + x;
-add(3,4)
+([Bool][])
 "
 run e1
 
 
 let e1 = fromString "
-fun ignore (Bool x):Nil = ();
-ignore(true)
+print x; true
 "
 run e1
 
-
-let e2 = fromString "
-var y = 4;
-fun f(Int x):Int = if x = 0 then 0 else x + f(x-1);
-f({var y = 5; y + 1})
+let e1 = fromString "
+print x; true
 "
-run e2
+run e1
 
-
-let e2 = fromString "
-var a = 5;
-var b = a + 1;
-fun f(Int x):Int = x + b;
-f(3)
+let e1 = fromString "
+3::7::t
 "
-run e2
+run e1
 
-let e2 = fromString "
-var a = 4;
-var b = 7;
-fun swap(Int x, Int y):(Int, Int) = (y, x);
-var p = swap(a,b);
-var p1 = swap(p);
-p1
+let e1 = fromString "
+print x; true
 "
-run e2
+run e1
 
-let e2 = fromString "
-fun f0(): Int = 5 ;
-fun f1(Int x): Bool = 0 < x ;
-fun f2(Int x, Bool b): Int = if b then {x + 1} else x ;
-fun f3(Int n, Int x, Int y): Int = n * x + y ;
-f3(f0(), f2(3,true), 10)
+let e1 = fromString "
+print x; true
 "
-run e2
+run e1
 
-let e3 = fromString "
-{fun f(Int x):Int = x + 1 ;
- fun g(Int x):Int = 2 * x ;
- f(2) + g(3)
-}
+let e1 = fromString "
+fn (Int x) => -x end
 "
-run e3
+run e1
 
-
-let e4 = fromString "
-fun fact (Int x):Int = {
-    if x = 0 then 1
-    else x * fact(x - 1)
-};
-fact(n)
+let e1 = fromString "
+var x = 9; x + 1
 "
-PlcInterp.eval e4 [("n", IntV 6)]
+run e1
 
-let e5 = fromString "
-var x = true;
-if x then 10 else 20
+let e1 = fromString "
+fun f(Int x) = x; f(1)
 "
-run e5
+run e1
 
-let e6 = fromString "
-var in = 5;
-fun f(Int x):Int = if in < 0 then -1 else if in = 0 then 0 else 1;
-f(in)
+let e1 = fromString "
+match x with
+| 0 -> 1
+| -> -1
+end
 "
-run e6
+run e1
 
-let e7 = fromString "
-var let = 100; var end = let + 1; end
+let e1 = fromString "
+fun rec f(Int n) = ,
+if n <= 0 then 0 
+else n + f(n-1) ; 
+f(5) 
 "
-run e7
-
-
-let ex1 = fromString "{var x = 5+7; x}"
-run ex1
-
-let ex4 = fromString "
-var y = 11 ;
-fun f(Int x):Int = x + y ;
-var y = 22 ;
-f(y)
-"
-run ex4
-
-
-let ex5 = fromString "
-fun inc(Int x):Int = x + 1;
-fun fib(Int n):Int = {
-  fun ge2(Int x):Bool = 1 < x ;
-  if ge2(n) then fib(n-1) + fib(n-2) else 1
-} ;
-fib(25)
-"
-run ex5
-
-let ex6 = fromString "
-fun f(Int x):Int = {
-  fun g(Int y,Int z):Int = z * y ;
-  g(x,x) + 1
-}
-;
-f(3)
-"
-run ex6
+run e1

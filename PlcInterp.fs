@@ -6,6 +6,8 @@ open Absyn
 open Environ
 
 let rec eval (e : expr) (env : plcVal env) : plcVal =
+    BoolV false
+(*
     match e with
     | CstI i -> IntV i
     | CstB b -> BoolV b
@@ -68,3 +70,4 @@ let rec eval (e : expr) (env : plcVal env) : plcVal =
       match eval e1 env with
       | ListV vs -> List.item (n - 1) vs
       | _ -> failwith "Impossible"
+*)
