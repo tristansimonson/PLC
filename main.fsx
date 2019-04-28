@@ -14,10 +14,15 @@
 #load "C:\Users\\trist\Desktop\project\PlcInterp.fs"
 #load "C:\Users\\trist\Desktop\project\PlcChecker.fs"
 #load "C:\Users\\trist\Desktop\project\Plc.fs"
+#load "C:\Users\\trist\Desktop\project\Plc.fs"
+#load "C:\Users\\trist\Desktop\project\Test.fs"
+#load "C:\Users\\trist\Desktop\project\TestAux.fs"
 
 open Absyn
 let fromString = Parse.fromString // string parser function
 let run e = printfn "\nResult is  %s\n" (Plc.run e)   // execution function
+
+TestAux.testAll Test.cases
 
 (* Examples in concrete syntax *)
 
@@ -81,9 +86,14 @@ end
 run e1
 
 let e1 = fromString "
-fun rec f(Int n) = ,
-if n <= 0 then 0 
-else n + f(n-1) ; 
-f(5) 
+fun rec f(Int n) : Int =
+if n <= 0 then 0
+else n + f(n-1); 
+f(5)
+"
+run e1
+
+let e1 = fromString "
+3+1 = 4 && 4 <= 3
 "
 run e1

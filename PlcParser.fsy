@@ -91,8 +91,8 @@ Expr :
   | MATCH Expr WITH MatchExpr    { Match ($2, $4)       }                  /*match expression*/
   | NOT Expr                     { Prim1 ("!", $2)      }                  /*unary operator application*/
   | MINUS Expr                   { Prim1 ("-", $2)      }
-  | HEAD Expr                    { Prim1 ("head", $2)   }
-  | TAIL Expr                    { Prim1 ("tail", $2)   }
+  | HEAD Expr                    { Prim1 ("hd", $2)   }
+  | TAIL Expr                    { Prim1 ("tl", $2)   }
   | ISE Expr                     { Prim1 ("ise", $2)    }
   | PRINT Expr                   { Prim1 ("print", $2)  }
   | Expr PLUS Expr               { Prim2 ("+", $1, $3)  }                  /*binary operator application*/
@@ -103,6 +103,7 @@ Expr :
   | Expr NEQ Expr                { Prim2 ("!=", $1, $3) }
   | Expr LT Expr                 { Prim2 ("<", $1, $3)  }
   | Expr LTE Expr                { Prim2 ("<=", $1, $3) }
+  | Expr AND Expr                { Prim2 ("&&", $1, $3) }
   | Expr CONS Expr               { Prim2 ("::", $1, $3) }
   | Expr SEMIC Expr              { Prim2 (";", $1, $3)  }
   | Expr LBRACK CSTINT RBRACK    { Item ($3, $1)        }                  /*Const is Nat might need to add case for that*/
