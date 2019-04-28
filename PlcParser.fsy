@@ -134,9 +134,9 @@ Comps :                                                            /*list compon
   | Expr COMMA Comps        { $1 :: $3 }
 ;
 
-MatchExpr :                                                        /*match cases*/
-  /*END                                {                    }        not sure what to do for this case*/
-  | PIPE CondExpr ARROW Expr MatchExpr { [($2), $4] :: [$5] }      /*the brackets are probably wrong*/
+MatchExpr :                                                               /*match cases*/
+  /*END                                {                           }        not sure what to do for this case*/
+  | PIPE CondExpr ARROW Expr MatchExpr { List.append [($2, $4)] $5 }      /*the brackets are probably wrong*/
 ;
 
 CondExpr :                                    /*values to be matched against*/
@@ -162,7 +162,7 @@ Type :
     AtomicType               { $1            }
   | LPAR Types RPAR          { ListT ($2)    }                 /*list type*/
   | LBRACK Type RBRACK       { SeqT ($2)     }                 /*sequence type*/
-  | Type ARROW Type          { FunT ($1, $2) }                 /*function type*/
+  | Type ARROW Type          { FunT ($1, $3) }                 /*function type*/
 ;
 
 AtomicType :

@@ -22,19 +22,19 @@ let keyword s =
     | "then"  -> THEN
     | "var"  -> VAR
     | "fun"  -> FUN
-	| "fn"   -> FN
+    | "fn"   -> FN
     | "true"  -> CSTBOOL true
     | "Int"  -> INT
     | "Bool"  -> BOOL
     | "Nil"  -> NIL
-	| "print" -> PRINT
-	| "end"   -> END
-	| "rec"   -> REC
-	| "match" -> MATCH
-	| "with"  -> WITH
-	| "hd"    -> HEAD
-	| "tl"    -> TAIL
-	| "ise"   -> ISE
+    | "print" -> PRINT
+    | "end"   -> END
+    | "rec"   -> REC
+    | "match" -> MATCH
+    | "with"  -> WITH
+    | "hd"    -> HEAD
+    | "tl"    -> TAIL
+    | "ise"   -> ISE
     | _       -> NAME s
 }
 

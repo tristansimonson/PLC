@@ -899,7 +899,7 @@ let _fsyacc_reductions ()  =    [|
                 (
                    (
 # 139 "PlcParser.fsy"
-                                                              [(_2), _4] :: [_5] 
+                                                              List.append [(_2, _4)] _5 
                    )
 # 139 "PlcParser.fsy"
                  : 'MatchExpr));
@@ -1021,7 +1021,7 @@ let _fsyacc_reductions ()  =    [|
                 (
                    (
 # 165 "PlcParser.fsy"
-                                                    FunT (_1, _2) 
+                                                    FunT (_1, _3) 
                    )
 # 165 "PlcParser.fsy"
                  : 'Type));
