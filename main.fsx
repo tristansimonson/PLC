@@ -1,6 +1,13 @@
+
 (*
   Make sure you regenerate the Parser and Lexer
   every time you modify PlcLexer.fsl or PlcParser.fsy
+*)
+(*
+cd /Users/tejasmallela/Desktop/PLC-master
+   mono bin/fslex.exe --unicode PlcLexer.fsl
+   mono bin/fsyacc.exe --module PlcParser PlcParser.fsy
+
 *)
 
 // Windows only
@@ -14,9 +21,21 @@
 #load "C:\Users\\trist\Desktop\project\PlcInterp.fs"
 #load "C:\Users\\trist\Desktop\project\PlcChecker.fs"
 #load "C:\Users\\trist\Desktop\project\Plc.fs"
-#load "C:\Users\\trist\Desktop\project\Plc.fs"
-#load "C:\Users\\trist\Desktop\project\Test.fs"
-#load "C:\Users\\trist\Desktop\project\TestAux.fs"
+
+
+   #r "/Users/tejasmallela/Desktop/PLC-master/bin/FsLexYacc.Runtime.dll"
+   #load "/Users/tejasmallela/Desktop/PLC-master/Environ.fs"
+   #load "/Users/tejasmallela/Desktop/PLC-master/Absyn.fs"
+   #load "/Users/tejasmallela/Desktop/PLC-master/PlcParserAux.fs"
+   #load "/Users/tejasmallela/Desktop/PLC-master/PlcParser.fs"
+   #load "/Users/tejasmallela/Desktop/PLC-master/PlcLexer.fs"
+   #load "/Users/tejasmallela/Desktop/PLC-master/Parse.fs"
+   #load "/Users/tejasmallela/Desktop/PLC-master/PlcInterp.fs"
+   #load "/Users/tejasmallela/Desktop/PLC-master/PlcChecker.fs"
+   #load "/Users/tejasmallela/Desktop/PLC-master/Plc.fs"
+   #load "/Users/tejasmallela/Desktop/PLC-master/Test.fs"
+   #load "/Users/tejasmallela/Desktop/PLC-master/TestAux.fs"
+
 
 open Absyn
 let fromString = Parse.fromString // string parser function
