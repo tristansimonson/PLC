@@ -135,7 +135,7 @@ Comps :                                                            /*list compon
 ;
 
 MatchExpr :                                                               /*match cases*/
-  /*END                                {                           }        not sure what to do for this case*/
+    END                                { []                        }
   | PIPE CondExpr ARROW Expr MatchExpr { List.append [($2, $4)] $5 }      /*the brackets are probably wrong*/
 ;
 

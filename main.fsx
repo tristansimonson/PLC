@@ -53,22 +53,7 @@ print x; true
 run e1
 
 let e1 = fromString "
-print x; true
-"
-run e1
-
-let e1 = fromString "
 3::7::t
-"
-run e1
-
-let e1 = fromString "
-print x; true
-"
-run e1
-
-let e1 = fromString "
-print x; true
 "
 run e1
 
@@ -90,7 +75,7 @@ run e1
 let e1 = fromString "
 match x with
 | 0 -> 1
-| -> -1
+| _ -> -1
 end
 "
 run e1
