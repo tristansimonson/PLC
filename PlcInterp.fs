@@ -6,11 +6,9 @@ open Absyn
 open Environ
 
 let rec eval (e : expr) (env : plcVal env) : plcVal =
-    BoolV false
-(*
     match e with
-    | CstI i -> IntV i
-    | CstB b -> BoolV b
+    | ConI i -> IntV i
+    | ConB b -> BoolV b
 
     | Var x  ->
       let v = lookup env x in
@@ -21,18 +19,29 @@ let rec eval (e : expr) (env : plcVal env) : plcVal =
       | _      -> failwith ("Value of variable _" + x + "_ is not first-order.")
 
     | Prim1 (op, e1) ->
-      let v1 = eval e1 env in
-      match (op, v1) with
-      | ("-", IntV i) -> IntV (- i)
-      | ("!", BoolV b) -> BoolV (not b)
-      | _   -> failwith "Impossible"
+      match (op, e1) with
+      | ("hd", e) -> eval (Item (1, e)) env
+      | ("tl", List e) -> eval (Item (List.length e, List e)) env
+      | (_, _) -> let v1 = eval e1 env in
+                    match (op, v1) with
+                    | ("-", IntV i) -> IntV (- i)
+                    | ("!", BoolV b) -> BoolV (not b)
+                    | ("ise", ListV e) -> if (List.length e = 0) then BoolV true else BoolV false
+                  //| ("print", e) -> val2string e          not sure how to handle    
+                    | _   -> failwith "Impossible"
 
     | Prim2 (op, e1, e2) ->
       let v1 = eval e1 env in
       let v2 = eval e2 env in
       match (op, v1, v2) with
+      | (";", _, _) -> v2                                // could be wrong
       | ("=", _, _) -> BoolV (v1 = v2)
+      | ("!=", _, _) -> BoolV (v1 <> v2)
+      | ("::", _, ListV i2) -> ListV (v1 :: i2)          // might have issues with v1 values appending
+      | ("&&", BoolV i1, BoolV i2) -> BoolV (i1 && i2)
       | ("<", IntV i1, IntV i2) -> BoolV (i1 < i2)
+      | ("<=", IntV i1, IntV i2) -> BoolV (i1 <= i2)
+      | ("/", IntV i1, IntV i2) -> IntV (i1 / i2)        // floats might cause problem
       | ("*", IntV i1, IntV i2) -> IntV (i1 * i2)
       | ("+", IntV i1, IntV i2) -> IntV (i1 + i2)
       | ("-", IntV i1, IntV i2) -> IntV (i1 - i2)
@@ -70,4 +79,3 @@ let rec eval (e : expr) (env : plcVal env) : plcVal =
       match eval e1 env with
       | ListV vs -> List.item (n - 1) vs
       | _ -> failwith "Impossible"
-*)

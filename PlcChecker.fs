@@ -8,13 +8,11 @@ open Environ
 // the type of an expression instead of its value.
 
 let rec teval (e : expr) (env : plcType env) : plcType =
-    IntT
-(*  
     match e with
     | List [] -> ListT []
     | List es -> ListT (List.map (fun e -> teval e env) es)
-    | CstI i -> IntT
-    | CstB b -> BoolT
+    | ConI i -> IntT
+    | ConB b -> BoolT
     | Var x -> lookup env x
     | Let(x, e1, letBody) -> let xTyp = teval e1 env 
                              let letBodyEnv = (x, xTyp) :: env
@@ -54,4 +52,3 @@ let rec teval (e : expr) (env : plcType env) : plcType =
                                     with
                                       | :? System.ArgumentException -> failwith ("Item: index out of range with position " + string n)
                       | _ -> failwith ("Item: not a list type " + type2string (teval e1 env))
-*)
