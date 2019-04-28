@@ -442,7 +442,7 @@ let _fsyacc_reductions ()  =    [|
                    (
 # 75 "PlcParser.fsy"
                                                          match _1 with 
-                                                         | a, [b], _, _  -> Let (a, b, _3) 
+                                                         | a, [b], [], []  -> Let (a, b, _3) 
                                                          | a, [d], [b], [c] -> makeFun a b c d _3 
                                                        
                    )

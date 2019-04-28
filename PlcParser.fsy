@@ -73,7 +73,7 @@ Main :
 Prog :
     Expr                          { $1                                }   
   | Decl SEMIC Prog               { match $1 with 
-                                    | a, [b], _, _  -> Let (a, b, $3) 
+                                    | a, [b], [], []  -> Let (a, b, $3) 
                                     | a, [d], [b], [c] -> makeFun a b c d $3 
                                   } 
 ;
