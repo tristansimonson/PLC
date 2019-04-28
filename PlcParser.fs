@@ -442,27 +442,26 @@ let _fsyacc_reductions ()  =    [|
                 (
                    (
 # 75 "PlcParser.fsy"
-                                                         match _1 with 
-                                                         | _, Letrec _ -> let (v, a, t, e) = _1 in (makeFun v a t (List e :: [_3])) 
-                                                         | _, Let _ -> let (v, e1, e2) = _1 in Let (v, e1, List [e2; _3]) 
-                                                         | _, _ -> let (v, e) = _1 in Let (v, e, _3) 
+                                                         (match _1 with 
+                                                         | a, b -> Let (a, b, _3) 
+                                                         | a, b, c, d -> makeFun a b c d _3 )
                                                        
                    )
 # 75 "PlcParser.fsy"
                  : 'Prog));
-# 453 "PlcParser.fs"
+# 452 "PlcParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
             let _4 = (let data = parseState.GetInput(4) in (Microsoft.FSharp.Core.Operators.unbox data : Absyn.expr)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 83 "PlcParser.fsy"
-                                                                   _2, _4                  
+# 82 "PlcParser.fsy"
+                                                                   _2, _4             
                    )
-# 83 "PlcParser.fsy"
+# 82 "PlcParser.fsy"
                  : 'Decl));
-# 465 "PlcParser.fs"
+# 464 "PlcParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'Args)) in
@@ -470,12 +469,12 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 84 "PlcParser.fsy"
-                                                                   (_2, _3, _5), Let (_2, _3, _5) 
+# 83 "PlcParser.fsy"
+                                                                   _2, makeAnon _3 _5 
                    )
-# 84 "PlcParser.fsy"
+# 83 "PlcParser.fsy"
                  : 'Decl));
-# 478 "PlcParser.fs"
+# 477 "PlcParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
             let _4 = (let data = parseState.GetInput(4) in (Microsoft.FSharp.Core.Operators.unbox data : 'Args)) in
@@ -484,12 +483,23 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 85 "PlcParser.fsy"
-                                                                   (_3, _4, _6, _8), makeFun _3 _4 _6 _8 
+# 84 "PlcParser.fsy"
+                                                                   _3, _4, _6, _8     
                    )
-# 85 "PlcParser.fsy"
+# 84 "PlcParser.fsy"
                  : 'Decl));
-# 492 "PlcParser.fs"
+# 491 "PlcParser.fs"
+        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : Absyn.expr)) in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 88 "PlcParser.fsy"
+                                                        _1                   
+                   )
+# 88 "PlcParser.fsy"
+                 : Absyn.expr));
+# 502 "PlcParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : Absyn.expr)) in
             Microsoft.FSharp.Core.Operators.box
@@ -500,18 +510,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 89 "PlcParser.fsy"
                  : Absyn.expr));
-# 503 "PlcParser.fs"
-        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
-            let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : Absyn.expr)) in
-            Microsoft.FSharp.Core.Operators.box
-                (
-                   (
-# 90 "PlcParser.fsy"
-                                                        _1                   
-                   )
-# 90 "PlcParser.fsy"
-                 : Absyn.expr));
-# 514 "PlcParser.fs"
+# 513 "PlcParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : Absyn.expr)) in
             let _4 = (let data = parseState.GetInput(4) in (Microsoft.FSharp.Core.Operators.unbox data : Absyn.expr)) in
@@ -519,289 +518,301 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 91 "PlcParser.fsy"
+# 90 "PlcParser.fsy"
                                                         If (_2, _4, _6)      
                    )
-# 91 "PlcParser.fsy"
+# 90 "PlcParser.fsy"
                  : Absyn.expr));
-# 527 "PlcParser.fs"
+# 526 "PlcParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : Absyn.expr)) in
             let _4 = (let data = parseState.GetInput(4) in (Microsoft.FSharp.Core.Operators.unbox data : 'MatchExpr)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 92 "PlcParser.fsy"
+# 91 "PlcParser.fsy"
                                                         Match (_2, _4)       
                    )
-# 92 "PlcParser.fsy"
+# 91 "PlcParser.fsy"
                  : Absyn.expr));
-# 539 "PlcParser.fs"
+# 538 "PlcParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : Absyn.expr)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 93 "PlcParser.fsy"
+# 92 "PlcParser.fsy"
                                                         Prim1 ("!", _2)      
                    )
-# 93 "PlcParser.fsy"
+# 92 "PlcParser.fsy"
                  : Absyn.expr));
-# 550 "PlcParser.fs"
+# 549 "PlcParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : Absyn.expr)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 94 "PlcParser.fsy"
+# 93 "PlcParser.fsy"
                                                         Prim1 ("-", _2)      
                    )
-# 94 "PlcParser.fsy"
+# 93 "PlcParser.fsy"
                  : Absyn.expr));
-# 561 "PlcParser.fs"
+# 560 "PlcParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : Absyn.expr)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 95 "PlcParser.fsy"
+# 94 "PlcParser.fsy"
                                                         Prim1 ("head", _2)   
                    )
-# 95 "PlcParser.fsy"
+# 94 "PlcParser.fsy"
                  : Absyn.expr));
-# 572 "PlcParser.fs"
+# 571 "PlcParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : Absyn.expr)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 96 "PlcParser.fsy"
+# 95 "PlcParser.fsy"
                                                         Prim1 ("tail", _2)   
                    )
-# 96 "PlcParser.fsy"
+# 95 "PlcParser.fsy"
                  : Absyn.expr));
-# 583 "PlcParser.fs"
+# 582 "PlcParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : Absyn.expr)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 97 "PlcParser.fsy"
+# 96 "PlcParser.fsy"
                                                         Prim1 ("ise", _2)    
                    )
-# 97 "PlcParser.fsy"
+# 96 "PlcParser.fsy"
                  : Absyn.expr));
-# 594 "PlcParser.fs"
+# 593 "PlcParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : Absyn.expr)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 98 "PlcParser.fsy"
+# 97 "PlcParser.fsy"
                                                         Prim1 ("print", _2)  
                    )
-# 98 "PlcParser.fsy"
+# 97 "PlcParser.fsy"
                  : Absyn.expr));
-# 605 "PlcParser.fs"
+# 604 "PlcParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : Absyn.expr)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : Absyn.expr)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 99 "PlcParser.fsy"
+# 98 "PlcParser.fsy"
                                                         Prim2 ("+", _1, _3)  
                    )
-# 99 "PlcParser.fsy"
+# 98 "PlcParser.fsy"
                  : Absyn.expr));
-# 617 "PlcParser.fs"
+# 616 "PlcParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : Absyn.expr)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : Absyn.expr)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 100 "PlcParser.fsy"
+# 99 "PlcParser.fsy"
                                                         Prim2 ("-", _1, _3)  
                    )
-# 100 "PlcParser.fsy"
+# 99 "PlcParser.fsy"
                  : Absyn.expr));
-# 629 "PlcParser.fs"
+# 628 "PlcParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : Absyn.expr)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : Absyn.expr)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 101 "PlcParser.fsy"
+# 100 "PlcParser.fsy"
                                                         Prim2 ("*", _1, _3)  
                    )
-# 101 "PlcParser.fsy"
+# 100 "PlcParser.fsy"
                  : Absyn.expr));
-# 641 "PlcParser.fs"
+# 640 "PlcParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : Absyn.expr)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : Absyn.expr)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 102 "PlcParser.fsy"
+# 101 "PlcParser.fsy"
                                                         Prim2 ("/", _1, _3)  
                    )
-# 102 "PlcParser.fsy"
+# 101 "PlcParser.fsy"
                  : Absyn.expr));
-# 653 "PlcParser.fs"
+# 652 "PlcParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : Absyn.expr)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : Absyn.expr)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 103 "PlcParser.fsy"
+# 102 "PlcParser.fsy"
                                                         Prim2 ("=", _1, _3)  
                    )
-# 103 "PlcParser.fsy"
+# 102 "PlcParser.fsy"
                  : Absyn.expr));
-# 665 "PlcParser.fs"
+# 664 "PlcParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : Absyn.expr)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : Absyn.expr)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 104 "PlcParser.fsy"
+# 103 "PlcParser.fsy"
                                                         Prim2 ("!=", _1, _3) 
                    )
-# 104 "PlcParser.fsy"
+# 103 "PlcParser.fsy"
                  : Absyn.expr));
-# 677 "PlcParser.fs"
+# 676 "PlcParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : Absyn.expr)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : Absyn.expr)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 105 "PlcParser.fsy"
+# 104 "PlcParser.fsy"
                                                         Prim2 ("<", _1, _3)  
                    )
-# 105 "PlcParser.fsy"
+# 104 "PlcParser.fsy"
                  : Absyn.expr));
-# 689 "PlcParser.fs"
+# 688 "PlcParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : Absyn.expr)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : Absyn.expr)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 106 "PlcParser.fsy"
+# 105 "PlcParser.fsy"
                                                         Prim2 ("<=", _1, _3) 
                    )
-# 106 "PlcParser.fsy"
+# 105 "PlcParser.fsy"
                  : Absyn.expr));
-# 701 "PlcParser.fs"
+# 700 "PlcParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : Absyn.expr)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : Absyn.expr)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 107 "PlcParser.fsy"
+# 106 "PlcParser.fsy"
                                                         Prim2 ("::", _1, _3) 
                    )
-# 107 "PlcParser.fsy"
+# 106 "PlcParser.fsy"
                  : Absyn.expr));
-# 713 "PlcParser.fs"
+# 712 "PlcParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : Absyn.expr)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : Absyn.expr)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 108 "PlcParser.fsy"
+# 107 "PlcParser.fsy"
                                                         Prim2 (";", _1, _3)  
                    )
-# 108 "PlcParser.fsy"
+# 107 "PlcParser.fsy"
                  : Absyn.expr));
-# 725 "PlcParser.fs"
+# 724 "PlcParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : Absyn.expr)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : Absyn.expr)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 109 "PlcParser.fsy"
+# 108 "PlcParser.fsy"
                                                         Item (_1, _3)        
                    )
-# 109 "PlcParser.fsy"
+# 108 "PlcParser.fsy"
                  : Absyn.expr));
-# 737 "PlcParser.fs"
+# 736 "PlcParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : Absyn.expr)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 113 "PlcParser.fsy"
+# 112 "PlcParser.fsy"
                                                                _1             
                    )
-# 113 "PlcParser.fsy"
+# 112 "PlcParser.fsy"
                  : Absyn.expr));
-# 748 "PlcParser.fs"
+# 747 "PlcParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 114 "PlcParser.fsy"
+# 113 "PlcParser.fsy"
                                                                Var _1         
                    )
-# 114 "PlcParser.fsy"
+# 113 "PlcParser.fsy"
                  : Absyn.expr));
-# 759 "PlcParser.fs"
+# 758 "PlcParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'Prog)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 115 "PlcParser.fsy"
+# 114 "PlcParser.fsy"
                                                                {_2}           
                    )
-# 115 "PlcParser.fsy"
+# 114 "PlcParser.fsy"
                  : Absyn.expr));
-# 770 "PlcParser.fs"
+# 769 "PlcParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : Absyn.expr)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 116 "PlcParser.fsy"
+# 115 "PlcParser.fsy"
                                                                (_2)           
                    )
-# 116 "PlcParser.fsy"
+# 115 "PlcParser.fsy"
                  : Absyn.expr));
-# 781 "PlcParser.fs"
+# 780 "PlcParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'Comps)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 117 "PlcParser.fsy"
+# 116 "PlcParser.fsy"
                                                                List _2        
                    )
-# 117 "PlcParser.fsy"
+# 116 "PlcParser.fsy"
                  : Absyn.expr));
-# 792 "PlcParser.fs"
+# 791 "PlcParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'Args)) in
             let _4 = (let data = parseState.GetInput(4) in (Microsoft.FSharp.Core.Operators.unbox data : Absyn.expr)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 118 "PlcParser.fsy"
+# 117 "PlcParser.fsy"
                                                                makeAnon _2 _4 
                    )
-# 118 "PlcParser.fsy"
+# 117 "PlcParser.fsy"
                  : Absyn.expr));
-# 804 "PlcParser.fs"
+# 803 "PlcParser.fs"
+        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
+            let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : Absyn.expr)) in
+            let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : Absyn.expr)) in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 121 "PlcParser.fsy"
+                                                               Call (_1, _2) 
+                   )
+# 121 "PlcParser.fsy"
+                 : Absyn.expr));
+# 815 "PlcParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : Absyn.expr)) in
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : Absyn.expr)) in
@@ -813,96 +824,84 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 122 "PlcParser.fsy"
                  : Absyn.expr));
-# 816 "PlcParser.fs"
-        (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
-            let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : Absyn.expr)) in
-            let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : Absyn.expr)) in
-            Microsoft.FSharp.Core.Operators.box
-                (
-                   (
-# 123 "PlcParser.fsy"
-                                                               Call (_1, _2) 
-                   )
-# 123 "PlcParser.fsy"
-                 : Absyn.expr));
-# 828 "PlcParser.fs"
+# 827 "PlcParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : bool)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 127 "PlcParser.fsy"
+# 126 "PlcParser.fsy"
                                                                ConB (_1)    
                    )
-# 127 "PlcParser.fsy"
+# 126 "PlcParser.fsy"
                  : Absyn.expr));
-# 839 "PlcParser.fs"
+# 838 "PlcParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : int)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 128 "PlcParser.fsy"
+# 127 "PlcParser.fsy"
                                                                ConI (_1)    
                    )
-# 128 "PlcParser.fsy"
+# 127 "PlcParser.fsy"
                  : Absyn.expr));
-# 850 "PlcParser.fs"
+# 849 "PlcParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 129 "PlcParser.fsy"
+# 128 "PlcParser.fsy"
                                                                List []      
                    )
-# 129 "PlcParser.fsy"
+# 128 "PlcParser.fsy"
                  : Absyn.expr));
-# 860 "PlcParser.fs"
+# 859 "PlcParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'Type)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 130 "PlcParser.fsy"
+# 129 "PlcParser.fsy"
                                                                ESeq (_2 []) 
                    )
-# 130 "PlcParser.fsy"
+# 129 "PlcParser.fsy"
                  : Absyn.expr));
-# 871 "PlcParser.fs"
+# 870 "PlcParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : Absyn.expr)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : Absyn.expr)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 134 "PlcParser.fsy"
+# 133 "PlcParser.fsy"
                                                    [_1; _3] 
                    )
-# 134 "PlcParser.fsy"
+# 133 "PlcParser.fsy"
                  : 'Comps));
-# 883 "PlcParser.fs"
+# 882 "PlcParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : Absyn.expr)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'Comps)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 135 "PlcParser.fsy"
+# 134 "PlcParser.fsy"
                                                    _1 :: _3 
                    )
-# 135 "PlcParser.fsy"
+# 134 "PlcParser.fsy"
                  : 'Comps));
-# 895 "PlcParser.fs"
+# 894 "PlcParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 139 "PlcParser.fsy"
+# 138 "PlcParser.fsy"
                                                                                  
                    )
-# 139 "PlcParser.fsy"
+# 138 "PlcParser.fsy"
                  : 'MatchExpr));
-# 905 "PlcParser.fs"
+# 904 "PlcParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'CondExpr)) in
             let _4 = (let data = parseState.GetInput(4) in (Microsoft.FSharp.Core.Operators.unbox data : Absyn.expr)) in
@@ -910,200 +909,200 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 140 "PlcParser.fsy"
+# 139 "PlcParser.fsy"
                                                               [(_2), _4] :: [_5] 
                    )
-# 140 "PlcParser.fsy"
+# 139 "PlcParser.fsy"
                  : 'MatchExpr));
-# 918 "PlcParser.fs"
+# 917 "PlcParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : Absyn.expr)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 144 "PlcParser.fsy"
+# 143 "PlcParser.fsy"
                                                     Some (_1) 
                    )
-# 144 "PlcParser.fsy"
+# 143 "PlcParser.fsy"
                  : 'CondExpr));
-# 929 "PlcParser.fs"
+# 928 "PlcParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 145 "PlcParser.fsy"
+# 144 "PlcParser.fsy"
                                                     None      
                    )
-# 145 "PlcParser.fsy"
+# 144 "PlcParser.fsy"
                  : 'CondExpr));
-# 939 "PlcParser.fs"
+# 938 "PlcParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 149 "PlcParser.fsy"
+# 148 "PlcParser.fsy"
                                                []   
                    )
-# 149 "PlcParser.fsy"
+# 148 "PlcParser.fsy"
                  : 'Args));
-# 949 "PlcParser.fs"
+# 948 "PlcParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'Params)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 150 "PlcParser.fsy"
+# 149 "PlcParser.fsy"
                                                _2   
                    )
-# 150 "PlcParser.fsy"
+# 149 "PlcParser.fsy"
                  : 'Args));
-# 960 "PlcParser.fs"
+# 959 "PlcParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'TypedVar)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 154 "PlcParser.fsy"
+# 153 "PlcParser.fsy"
                                                     _1 :: [] 
                    )
-# 154 "PlcParser.fsy"
+# 153 "PlcParser.fsy"
                  : 'Params));
-# 971 "PlcParser.fs"
+# 970 "PlcParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'TypedVar)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'Params)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 155 "PlcParser.fsy"
+# 154 "PlcParser.fsy"
                                                     _1 :: _3 
                    )
-# 155 "PlcParser.fsy"
+# 154 "PlcParser.fsy"
                  : 'Params));
-# 983 "PlcParser.fs"
+# 982 "PlcParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'Type)) in
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 159 "PlcParser.fsy"
+# 158 "PlcParser.fsy"
                                       (_1, _2) 
                    )
-# 159 "PlcParser.fsy"
+# 158 "PlcParser.fsy"
                  : 'TypedVar));
-# 995 "PlcParser.fs"
+# 994 "PlcParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'AtomicType)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 163 "PlcParser.fsy"
+# 162 "PlcParser.fsy"
                                                     _1            
                    )
-# 163 "PlcParser.fsy"
+# 162 "PlcParser.fsy"
                  : 'Type));
-# 1006 "PlcParser.fs"
+# 1005 "PlcParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'Types)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 164 "PlcParser.fsy"
+# 163 "PlcParser.fsy"
                                                     ListT (_2)    
                    )
-# 164 "PlcParser.fsy"
+# 163 "PlcParser.fsy"
                  : 'Type));
-# 1017 "PlcParser.fs"
+# 1016 "PlcParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'Type)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 165 "PlcParser.fsy"
+# 164 "PlcParser.fsy"
                                                     SeqT (_2)     
                    )
-# 165 "PlcParser.fsy"
+# 164 "PlcParser.fsy"
                  : 'Type));
-# 1028 "PlcParser.fs"
+# 1027 "PlcParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'Type)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'Type)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 166 "PlcParser.fsy"
+# 165 "PlcParser.fsy"
                                                     FunT (_1, _2) 
                    )
-# 166 "PlcParser.fsy"
+# 165 "PlcParser.fsy"
                  : 'Type));
-# 1040 "PlcParser.fs"
+# 1039 "PlcParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 170 "PlcParser.fsy"
+# 169 "PlcParser.fsy"
                                                ListT [] 
                    )
-# 170 "PlcParser.fsy"
+# 169 "PlcParser.fsy"
                  : 'AtomicType));
-# 1050 "PlcParser.fs"
+# 1049 "PlcParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 171 "PlcParser.fsy"
+# 170 "PlcParser.fsy"
                                                BoolT    
                    )
-# 171 "PlcParser.fsy"
+# 170 "PlcParser.fsy"
                  : 'AtomicType));
-# 1060 "PlcParser.fs"
+# 1059 "PlcParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 172 "PlcParser.fsy"
+# 171 "PlcParser.fsy"
                                                IntT     
                    )
-# 172 "PlcParser.fsy"
+# 171 "PlcParser.fsy"
                  : 'AtomicType));
-# 1070 "PlcParser.fs"
+# 1069 "PlcParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'Type)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 173 "PlcParser.fsy"
+# 172 "PlcParser.fsy"
                                                _2       
                    )
-# 173 "PlcParser.fsy"
+# 172 "PlcParser.fsy"
                  : 'AtomicType));
-# 1081 "PlcParser.fs"
+# 1080 "PlcParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'Type)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'Type)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 177 "PlcParser.fsy"
+# 176 "PlcParser.fsy"
                                                    [_1; _3] 
                    )
-# 177 "PlcParser.fsy"
+# 176 "PlcParser.fsy"
                  : 'Types));
-# 1093 "PlcParser.fs"
+# 1092 "PlcParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'Type)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'Types)) in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 178 "PlcParser.fsy"
+# 177 "PlcParser.fsy"
                                                    _1 :: _3 
                    )
-# 178 "PlcParser.fsy"
+# 177 "PlcParser.fsy"
                  : 'Types));
 |]
-# 1106 "PlcParser.fs"
+# 1105 "PlcParser.fs"
 let tables () : Microsoft.FSharp.Text.Parsing.Tables<_> = 
   { reductions= _fsyacc_reductions ();
     endOfInputTag = _fsyacc_endOfInputTag;
