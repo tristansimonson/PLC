@@ -21,6 +21,9 @@ cd /Users/tejasmallela/Desktop/PLC-master
 #load "C:\Users\\trist\Desktop\project\PlcInterp.fs"
 #load "C:\Users\\trist\Desktop\project\PlcChecker.fs"
 #load "C:\Users\\trist\Desktop\project\Plc.fs"
+#load "C:\Users\\trist\Desktop\project\Test.fs"
+#load "C:\Users\\trist\Desktop\project\TestAux.fs"
+
 
 
    #r "/Users/tejasmallela/Desktop/PLC-master/bin/FsLexYacc.Runtime.dll"
