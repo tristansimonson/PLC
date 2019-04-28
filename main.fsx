@@ -18,6 +18,19 @@
 #load "C:\Users\\trist\Desktop\project\Test.fs"
 #load "C:\Users\\trist\Desktop\project\TestAux.fs"
 
+#r "/Users/tejasmallela/Desktop/PLC-master/bin/FsLexYacc.Runtime.dll"
+#load "/Users/tejasmallela/Desktop/PLC-master/Environ.fs"
+#load "/Users/tejasmallela/Desktop/PLC-master/Absyn.fs"
+#load "/Users/tejasmallela/Desktop/PLC-master/PlcParserAux.fs"
+#load "/Users/tejasmallela/Desktop/PLC-master/PlcParser.fs"
+#load "/Users/tejasmallela/Desktop/PLC-master/PlcLexer.fs"
+#load "/Users/tejasmallela/Desktop/PLC-master/Parse.fs"
+#load "/Users/tejasmallela/Desktop/PLC-master/PlcInterp.fs"
+#load "/Users/tejasmallela/Desktop/PLC-master/PlcChecker.fs"
+#load "/Users/tejasmallela/Desktop/PLC-master/Plc.fs"
+#load "/Users/tejasmallela/Desktop/PLC-master/Test.fs"
+#load "/Users/tejasmallela/Desktop/PLC-master/TestAux.fs"
+
 open Absyn
 let fromString = Parse.fromString // string parser function
 let run e = printfn "\nResult is  %s\n" (Plc.run e)   // execution function
