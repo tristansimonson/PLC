@@ -5,10 +5,11 @@ module PlcInterp
 open Absyn
 open Environ
 
-let rec findMatch (v : plcVal) (elist: (expr option * expr) list) : expr =
+let rec findMatch (v : expr) (elist: (expr option * expr) list) : expr =
   match v, elist with
   | v1, [] -> failwith "Match: no match found"
-  | v1, (eo, e1) :: t -> if (v1 = eo || eo = "_") then e1 else (findMatch v t)
+  | v1, (Some (eo), e1) :: t -> if (v1 = eo) then e1 else (findMatch v t)
+  | v1, (None, e1) :: t -> e1
 
 let rec eval (e : expr) (env : plcVal env) : plcVal =
     match e with
@@ -73,8 +74,7 @@ let rec eval (e : expr) (env : plcVal env) : plcVal =
 
     | Anon (t, s, e1) -> eval (Call(s, e1)) env                    // not sure about this one either
 
-    | Match (e1, elist) -> let x = eval e1 env                     // probably contains errors
-                           eval (findMatch x elist) env
+    | Match (e1, elist) -> eval (findMatch e1 elist) env           // probably contains errors
 
     | Call (Var f, e1) ->
       let c = lookup env f in
