@@ -3,7 +3,6 @@ module TestAux
 open Microsoft.FSharp.Text
 open Absyn
 open PlcParser
-open Microsoft.FSharp.Text.Lexing
 
 let insCaret (s: string) r c =
   let mutable s' = "" in
