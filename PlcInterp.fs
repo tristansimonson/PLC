@@ -15,9 +15,12 @@ let rec eval (e : expr) (env : plcVal env) : plcVal =
     match e with
     | ConI i -> IntV i
     | ConB b -> BoolV b
+    (* ESeq might not be needed in eval since it is a list of types and eval returns plcVal
     | ESeq s -> match s with                                       // definitely wrong
-                | h :: [] -> SeqT eval h env
-                | h :: t -> SeqT List.append [eval h env] [eval t env]
+                | IntT i -> SeqV [IntV i]
+                | h :: [] -> SeqV eval h env
+                | h :: t -> SeqV List.append [eval h env] [eval t env]
+    *)
 
     | Var x  ->
       let v = lookup env x in
@@ -25,32 +28,33 @@ let rec eval (e : expr) (env : plcVal env) : plcVal =
       | IntV  _ -> v
       | BoolV _ -> v
       | ListV  _ -> v
+      | SeqV _ -> v
       | _      -> failwith ("Value of variable _" + x + "_ is not first-order.")
 
     | Prim1 (op, e1) ->
       match (op, e1) with
-      | ("hd", SeqT e) -> eval (Item (1, e)) env
-      | ("tl", SeqT e) -> eval (Item (List.length e, List e)) env
+      | ("hd", List elist) -> eval (List.item 1 elist) env                // do head and tail work for ESeq?
+      | ("tl", List elist) -> eval (List.item (List.length elist) elist) env
       | (_, _) -> let v1 = eval e1 env in
                     match (op, v1) with
                     | ("-", IntV i) -> IntV (- i)
                     | ("!", BoolV b) -> BoolV (not b)
-                    | ("ise", ListV e) -> if (List.length e = 0) then (BoolV true) else (BoolV false)
-                    | ("print", e) -> printf (val2string e)        // not sure how to handle    
+                    | ("ise", ListV elist) -> if (List.length elist = 0) then (BoolV true) else (BoolV false)
+                    //| ("print", v) -> printf "%s" (val2string v)        // not sure how to handle because string    
                     | _ -> failwith "Impossible"
 
     | Prim2 (op, e1, e2) ->
       let v1 = eval e1 env in
       let v2 = eval e2 env in
       match (op, v1, v2) with
-      | (";", _, _) -> v2                                          // could be wrong
+      | (";", _, _) -> v2                                          // could be wrong implementation
       | ("=", _, _) -> BoolV (v1 = v2)
       | ("!=", _, _) -> BoolV (v1 <> v2)
-      | ("::", _, ListV i2) -> SeqT ListV (v1 :: i2)               // might have issues with v1 values appending
+      | ("::", _, ListV i2) -> ListV (v1 :: i2)                    // should this return a sequence or list?
       | ("&&", BoolV i1, BoolV i2) -> BoolV (i1 && i2)
       | ("<", IntV i1, IntV i2) -> BoolV (i1 < i2)
       | ("<=", IntV i1, IntV i2) -> BoolV (i1 <= i2)
-      | ("/", IntV i1, IntV i2) -> IntV (i1 / i2)                  // floats might cause problem
+      | ("/", IntV i1, IntV i2) -> IntV (i1 / i2)                  // floats might cause problems
       | ("*", IntV i1, IntV i2) -> IntV (i1 * i2)
       | ("+", IntV i1, IntV i2) -> IntV (i1 + i2)
       | ("-", IntV i1, IntV i2) -> IntV (i1 - i2)
@@ -68,18 +72,18 @@ let rec eval (e : expr) (env : plcVal env) : plcVal =
       | BoolV false -> eval e3 env
       | _ -> failwith "Impossible"
 
-    | Letrec (f, x, _, e1, _, e2) ->                               // might need additional changes
-      let env2 = (f, Closure(f, x, e1, env)) :: env in
+    | Letrec (f, _, x, _, e1, e2) ->                               // might need additional changes
+      let env2 = (f, Clos(f, x, e1, env)) :: env in
       eval e2 env2
 
-    | Anon (t, s, e1) -> eval (Call(s, e1)) env                    // not sure about this one either
+    | Anon (t, s, e1) -> eval (Call(Var s, e1)) env                // not sure about this one either
 
     | Match (e1, elist) -> eval (findMatch e1 elist) env           // probably contains errors
 
     | Call (Var f, e1) ->
       let c = lookup env f in
       match c with
-      | Closure (f, x, e2, fenv) ->
+      | Clos (f, x, e2, fenv) ->
         let v = eval e1 env in
         let env1 = (x, v) :: (f, c) :: fenv in
         eval e2 env1
