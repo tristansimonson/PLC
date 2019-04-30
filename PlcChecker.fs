@@ -40,13 +40,13 @@ let rec teval (e : expr) (env : plcType env) : plcType =
                                 match op with
                                 | ";" -> failwith "implement me"
                                 | "::" -> failwith "implement me"
-                                | "!=" -> failwith "implement me"
-                                | "&&" -> failwith "implement me"
-                                | "<=" -> failwith "implement me"
-                                | "/" -> failwith "implement me"
+                                | "&&" -> if (i1 = BoolT && i1 = i2) then (BoolT; BoolT; BoolT) else failwith ("Prim2: cannot AND two non-int types " + (type2string i1) + " and " + (type2string i2))
+                                | "<=" -> if (i1 = IntT && i1 = i2) then (IntT; IntT; BoolT) else failwith ("Prim2: cannot LTE compare non-int types " + (type2string i1) + " and " + (type2string i2))
+                                | "/" -> if (i1 = IntT && i1 = i2) then (IntT; IntT; IntT) else failwith ("Prim2: cannot div non-int types " + (type2string i1) + " and " + (type2string i2))
                                 | "*" -> if (i1 = IntT && i1 = i2) then (IntT; IntT; IntT) else failwith ("Prim2: cannot multiply non-int types " + (type2string i1) + " and " + (type2string i2))
                                 | "+" -> if (i1 = IntT && i1 = i2) then (IntT; IntT; IntT) else failwith ("Prim2: cannot add non-int types " + (type2string i1) + " and " + (type2string i2))
                                 | "-" -> if (i1 = IntT && i1 = i2) then (IntT; IntT; IntT) else failwith ("Prim2: cannot subtract non-int types " + (type2string i1) + " and " + (type2string i2))
+                                | "!=" -> if (i1 = i2) then (i1; i2; BoolT) else failwith ("Prim2: mismatching equivalence return types " + (type2string i1) + " and " + (type2string i2))
                                 | "=" -> if (i1 = i2) then (i1; i2; BoolT) else failwith ("Prim2: mismatching equivalence return types " + (type2string i1) + " and " + (type2string i2))
                                 | "<" -> if (i1 = IntT && i1 = i2) then (IntT; IntT; BoolT) else failwith ("Prim2: cannot LT compare non-int types " + (type2string i1) + " and " + (type2string i2))
                                 | _   -> failwith ("Prim2: undefined binary operator " + op)
