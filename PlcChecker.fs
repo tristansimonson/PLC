@@ -38,6 +38,7 @@ let rec teval (e : expr) (env : plcType env) : plcType =
                           | "ise" -> match i1 with 
                                     | SeqT x -> BoolT
                                     | _ -> failwith ("Prim1: cannot use ise on type " + (type2string i1))
+
                           | "-" -> if (i1 = IntT) then (IntT; IntT) else failwith ("Prim1: cannot use negation on type " + (type2string i1))
                           | "!" -> if (i1 = BoolT) then (BoolT; BoolT) else failwith ("Prim1: cannot use not on type " + (type2string i1))
                           | _ -> failwith ("Prim1: undefined unary operator " + op)
@@ -89,5 +90,4 @@ let rec teval (e : expr) (env : plcType env) : plcType =
                                     with
                                       | :? System.ArgumentException -> failwith ("Item: index out of range with position " + string n)
                       | _ -> failwith ("Item: not a list type " + type2string (teval e1 env))
-
 

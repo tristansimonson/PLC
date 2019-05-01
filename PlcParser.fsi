@@ -107,7 +107,8 @@ type nonTerminalId =
     | NONTERM_MatchExpr
     | NONTERM_CondExpr
     | NONTERM_Args
-    | NONTERM_Arg
+    | NONTERM_Params
+    | NONTERM_TypedVar
     | NONTERM_Type
     | NONTERM_AtomicType
     | NONTERM_Types

@@ -71,14 +71,17 @@ Main :
 ;
 
 Prog :
-    Expr                          { $1                    }       /*not sure if supposed to be two matches (see pdf)*/
-  | Decl SEMIC Prog               { $1; $3                }                              
+    Expr                          { $1                                }   
+  | Decl SEMIC Prog               { match $1 with 
+                                    | a, [b], [], []  -> Let (a, b, $3) 
+                                    | a, [d], [b], [c] -> makeFun a b c d $3 
+                                  } 
 ;
 
 Decl :
-    VAR NAME EQ Expr                        {          }                       
-  | FUN NAME Args EQ Expr                   { Let ($2, $3, $5)    }            
-  | FUN REC NAME Args COLON Type EQ Expr    { makeFun $3 $4 $6 $8 }       
+    VAR NAME EQ Expr                        { $2, [$4], [], []             }                       
+  | FUN NAME Args EQ Expr                   { $2, [makeAnon $3 $5], [], [] }           
+  | FUN REC NAME Args COLON Type EQ Expr    { $3, [$8], [$4], [$6]         }       
 ;
 
 Expr :
@@ -88,8 +91,8 @@ Expr :
   | MATCH Expr WITH MatchExpr    { Match ($2, $4)       }                  /*match expression*/
   | NOT Expr                     { Prim1 ("!", $2)      }                  /*unary operator application*/
   | MINUS Expr                   { Prim1 ("-", $2)      }
-  | HEAD Expr                    { Prim1 ("head", $2)   }
-  | TAIL Expr                    { Prim1 ("tail", $2)   }
+  | HEAD Expr                    { Prim1 ("hd", $2)   }
+  | TAIL Expr                    { Prim1 ("tl", $2)   }
   | ISE Expr                     { Prim1 ("ise", $2)    }
   | PRINT Expr                   { Prim1 ("print", $2)  }
   | Expr PLUS Expr               { Prim2 ("+", $1, $3)  }                  /*binary operator application*/
@@ -100,16 +103,17 @@ Expr :
   | Expr NEQ Expr                { Prim2 ("!=", $1, $3) }
   | Expr LT Expr                 { Prim2 ("<", $1, $3)  }
   | Expr LTE Expr                { Prim2 ("<=", $1, $3) }
+  | Expr AND Expr                { Prim2 ("&&", $1, $3) }
   | Expr CONS Expr               { Prim2 ("::", $1, $3) }
   | Expr SEMIC Expr              { Prim2 (";", $1, $3)  }
-  | Expr LBRACK Const RBRACK     { Item ($1, $3)        }                  /*Const is Nat might need to add case for that*/
+  | Expr LBRACK CSTINT RBRACK    { Item ($3, $1)        }                  /*Const is Nat might need to add case for that*/
 ;
 
 AtomicExpr :
     Const                               { $1             }         /*constant literal*/
   | NAME                                { Var $1         }         /*function, variable or parameter name*/
-  | LBRACE Prog RBRACE                  { {$2}           }         /*local scope block ?*/
-  | LPAR Expr RPAR                      { ($2)           }         /*parenthesized expression ?*/
+  | LBRACE Prog RBRACE                  { $2             }         /*local scope block*/
+  | LPAR Expr RPAR                      { $2             }         /*parenthesized expression*/
   | LPAR Comps RPAR                     { List $2        }         /*list*/
   | FN Args DARROW Expr END             { makeAnon $2 $4 }         /*anonymous function*/
 ;
@@ -123,7 +127,7 @@ Const :
     CSTBOOL                             { ConB ($1)    }           
   | CSTINT                              { ConI ($1)    }           
   | LPAR RPAR                           { List []      }           /*unit value*/
-  | LPAR Type LBRACK RBRACK RPAR        { ESeq ($2 []) }           /*type-annotated empty sequence*/
+  | LPAR Type LBRACK RBRACK RPAR        { ESeq $2      }           /*type-annotated empty sequence*/
 ;
 
 Comps :                                                            /*list components*/
@@ -131,9 +135,9 @@ Comps :                                                            /*list compon
   | Expr COMMA Comps        { $1 :: $3 }
 ;
 
-MatchExpr :                                                        /*match cases*/
-    END                                {                    }
-  | PIPE CondExpr ARROW Expr MatchExpr { [($2), $4] :: [$5] }      /*the brackets are probably wrong*/
+MatchExpr :                                                               /*match cases*/
+    END                                { []                        }
+  | PIPE CondExpr ARROW Expr MatchExpr { List.append [($2, $4)] $5 }      /*the brackets are probably wrong*/
 ;
 
 CondExpr :                                    /*values to be matched against*/
@@ -141,23 +145,25 @@ CondExpr :                                    /*values to be matched against*/
   | UNDERSCORE               { None      }    /*in 4.2 of pdf _ is None*/
 ;
 
-Args:                                         /*function arguments*/
-    LPAR RPAR                { []       }     /*imported directly from hw6 might need to change*/
-  | Arg                      { [$1]     }
-  | Arg COMMA Args           { $1 :: $3 }
-  | LPAR Arg COMMA Args RPAR { $2 :: $4 }
-  | LPAR Arg RPAR            { [$2]     }
+Args:
+    LPAR RPAR           { []   }
+  | LPAR Params RPAR    { $2   }      
 ;
 
-Arg:
-    Type NAME                { $1, $2 }
+Params:
+    TypedVar                 { $1 :: [] } 
+  | TypedVar COMMA Params    { $1 :: $3 } 
+;
+
+TypedVar:
+    Type NAME  { ($1, $2) } 
 ;
 
 Type :
     AtomicType               { $1            }
   | LPAR Types RPAR          { ListT ($2)    }                 /*list type*/
   | LBRACK Type RBRACK       { SeqT ($2)     }                 /*sequence type*/
-  | Type ARROW Type          { FunT ($1, $2) }                 /*function type*/
+  | Type ARROW Type          { FunT ($1, $3) }                 /*function type*/
 ;
 
 AtomicType :

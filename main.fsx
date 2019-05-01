@@ -48,9 +48,6 @@ let typeCheck e = PlcChecker.teval e []
 
 (* Examples in concrete syntax *)
 
-
-(* Examples in concrete syntax *)
-
 let e1 = Parse.fromString "
 15
 "
@@ -122,9 +119,13 @@ let e1 = fromString "
 3+1 = 4 && 4 <= 3
 "
 run e1
-typeCheck e1
-
 
 let e1 = fromString "
-hd ([Int] [])"
-typeCheck e1
+3-1
+"
+run e1
+
+let e1 = fromString "
+!true
+"
+run e1
