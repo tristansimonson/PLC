@@ -3,6 +3,13 @@
   every time you modify PlcLexer.fsl or PlcParser.fsy
 *)
 
+(*
+  cd /Users/tejasmallela/Desktop/PLC-master
+  mono bin/fslex.exe --unicode PlcLexer.fsl
+  mono bin/fsyacc.exe --module PlcParser PlcParser.fsy
+
+*)
+
 // Windows only
 #r "C:\Users\\trist\Desktop\project\\bin\FsLexYacc.Runtime.dll"
 #load "C:\Users\\trist\Desktop\project\Environ.fs"
@@ -36,6 +43,8 @@ let fromString = Parse.fromString // string parser function
 let run e = printfn "\nResult is  %s\n" (Plc.run e)   // execution function
 
 TestAux.testAll Test.cases
+
+let typeCheck e = PlcChecker.teval e []
 
 (* Examples in concrete syntax *)
 
