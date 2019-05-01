@@ -38,8 +38,11 @@ let rec teval (e : expr) (env : plcType env) : plcType =
     | Prim2 (op, e1, e2) -> let i1 = teval e1 env in
                               let i2 = teval e2 env in
                                 match op with
-                                | ";" -> failwith "implement me"
-                                | "::" -> failwith "implement me"
+                                | ";" -> (i1; i2; i2) // may be wrong
+                                | "::" -> match i2 with
+                                          | ListT [] -> (i1; i2; i1;) // might need i1 list type for third postion
+                                          | ListT (h :: t) -> if (i1 = h) then (i1; i2; i2) else failwith ("Prim2: cannot append to list of different type " + (type2string i1) + " to " + (type2string i2))
+                                          | _ -> failwith ("Prim2: append with non list type " + (type2string i2))
                                 | "&&" -> if (i1 = BoolT && i1 = i2) then (BoolT; BoolT; BoolT) else failwith ("Prim2: cannot AND two non-int types " + (type2string i1) + " and " + (type2string i2))
                                 | "<=" -> if (i1 = IntT && i1 = i2) then (IntT; IntT; BoolT) else failwith ("Prim2: cannot LTE compare non-int types " + (type2string i1) + " and " + (type2string i2))
                                 | "/" -> if (i1 = IntT && i1 = i2) then (IntT; IntT; IntT) else failwith ("Prim2: cannot div non-int types " + (type2string i1) + " and " + (type2string i2))
@@ -54,16 +57,13 @@ let rec teval (e : expr) (env : plcType env) : plcType =
     | Anon (t, s , e1) -> failwith "implement me"
     
     | Match (e1, elist) -> teval (findMatch e1 elist) env
-    
-    | Letrec(f, x, xTyp, fBody, rTyp, letBody) -> failwith "need to update old Letfun implementation below"
-                                                  (*
-                                                  let fTyp = FunT(xTyp, rTyp) 
+
+    | Letrec(f, xTyp, x, rTyp, fBody, letBody) -> let fTyp = FunT(xTyp, rTyp) 
                                                   let fBodyEnv = (x, xTyp) :: (f, fTyp) :: env
                                                   let letBodyEnv = (f, fTyp) :: env
                                                   if teval fBody fBodyEnv = rTyp
                                                     then teval letBody letBodyEnv
                                                   else failwith ("Letfun: return type in " + f + " of " + type2string rTyp + " does not match " + type2string (teval fBody fBodyEnv))   
-                                                  *)
 
     | If (e1, e2, e3) -> match (teval e1 env), (teval e2 env), (teval e3 env) with
                          | BoolT, t2, t3 when (t2 = t3) -> t2
