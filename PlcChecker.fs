@@ -4,7 +4,6 @@ open Absyn
 open Environ
 open System
 
-
 // The type checker can be seen as an interpreter that computes
 // the type of an expression instead of its value.
 
