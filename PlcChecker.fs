@@ -1,8 +1,9 @@
-
 module PlcChecker
 
 open Absyn
 open Environ
+open System
+
 
 // The type checker can be seen as an interpreter that computes
 // the type of an expression instead of its value.
@@ -20,7 +21,8 @@ let rec teval (e : expr) (env : plcType env) : plcType =
     | ConI i -> IntT
     | ConB b -> BoolT
     | Var x -> lookup env x
-    | ESeq s -> SeqT s                                           
+    | ESeq s -> match s with
+                | SeqT _ -> s
 
     | Let(x, e1, letBody) -> let xTyp = teval e1 env 
                              let letBodyEnv = (x, xTyp) :: env
@@ -28,12 +30,15 @@ let rec teval (e : expr) (env : plcType env) : plcType =
 
     | Prim1 (op, e1) -> let i1 = teval e1 env in
                           match op with
-                          | "hd" -> match i1 with  // Need to test when e1 is Prim2 ("::", e1, e2)
+                          | "hd" -> match i1 with 
                                     | SeqT x -> x 
                                     | _ -> failwith ("Prim1: cannot use hd on type " + (type2string i1))
-                          | "tl" -> match i1 with  // Need to test when e1 is Prim2 ("::", e1, e2)
+                          | "tl" -> match i1 with 
                                     | SeqT x -> SeqT x 
                                     | _ -> failwith ("Prim1: cannot use tl on type " + (type2string i1))
+                          | "ise" -> match i1 with 
+                                    | SeqT x -> BoolT
+                                    | _ -> failwith ("Prim1: cannot use ise on type " + (type2string i1))
                           | "-" -> if (i1 = IntT) then (IntT; IntT) else failwith ("Prim1: cannot use negation on type " + (type2string i1))
                           | "!" -> if (i1 = BoolT) then (BoolT; BoolT) else failwith ("Prim1: cannot use not on type " + (type2string i1))
                           | _ -> failwith ("Prim1: undefined unary operator " + op)
@@ -85,3 +90,5 @@ let rec teval (e : expr) (env : plcType env) : plcType =
                                     with
                                       | :? System.ArgumentException -> failwith ("Item: index out of range with position " + string n)
                       | _ -> failwith ("Item: not a list type " + type2string (teval e1 env))
+
+
