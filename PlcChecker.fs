@@ -20,7 +20,7 @@ let rec teval (e : expr) (env : plcType env) : plcType =
     | ConI i -> IntT
     | ConB b -> BoolT
     | Var x -> lookup env x
-    | ESeq s -> SeqT s                                             // might be more to this one
+    | ESeq s -> SeqT s                                           
 
     | Let(x, e1, letBody) -> let xTyp = teval e1 env 
                              let letBodyEnv = (x, xTyp) :: env

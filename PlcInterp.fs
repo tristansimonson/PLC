@@ -15,13 +15,7 @@ let rec eval (e : expr) (env : plcVal env) : plcVal =
     match e with
     | ConI i -> IntV i
     | ConB b -> BoolV b
-    | ESeq s -> failwith "ESeq: eval called on ESeq, conversion to plcVal not possible"
-    (* ESeq might not be needed in eval since it is a list of types and eval returns plcVal
-    | ESeq s -> match s with                                       // definitely wrong
-                | IntT i -> SeqV [IntV i]
-                | h :: [] -> SeqV eval h env
-                | h :: t -> SeqV List.append [eval h env] [eval t env]
-    *)
+    | ESeq _ -> SeqV []
 
     | Var x  ->
       let v = lookup env x in

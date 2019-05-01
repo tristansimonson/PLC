@@ -110,3 +110,13 @@ let e1 = fromString "
 3+1 = 4 && 4 <= 3
 "
 run e1
+
+let e1 = fromString "
+3-1
+"
+run e1
+
+let e1 = fromString "
+!true
+"
+run e1
