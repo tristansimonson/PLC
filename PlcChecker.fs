@@ -36,9 +36,9 @@ let rec teval (e : expr) (env : plcType env) : plcType =
                                     | SeqT x -> SeqT x 
                                     | _ -> failwith ("Prim1: cannot use tl on type " + (type2string i1))
                           | "ise" -> match i1 with 
-                                    | SeqT x -> BoolT
-                                    | _ -> failwith ("Prim1: cannot use ise on type " + (type2string i1))
-
+                                     | SeqT x -> BoolT
+                                     | _ -> failwith ("Prim1: cannot use ise on type " + (type2string i1))
+                          | "print" -> ListT []
                           | "-" -> if (i1 = IntT) then (IntT; IntT) else failwith ("Prim1: cannot use negation on type " + (type2string i1))
                           | "!" -> if (i1 = BoolT) then (BoolT; BoolT) else failwith ("Prim1: cannot use not on type " + (type2string i1))
                           | _ -> failwith ("Prim1: undefined unary operator " + op)
@@ -62,7 +62,10 @@ let rec teval (e : expr) (env : plcType env) : plcType =
                                 | "<" -> if (i1 = IntT && i1 = i2) then (IntT; IntT; BoolT) else failwith ("Prim2: cannot LT compare non-int types " + (type2string i1) + " and " + (type2string i2))
                                 | _   -> failwith ("Prim2: undefined binary operator " + op)
     
-    | Anon (t, s , e1) -> failwith "implement me"
+    | Anon (xTyp, x , letBody) -> let xBodyEnv = (x, xTyp) :: env
+                                  if teval letBody xBodyEnv = xTyp
+                                    then xTyp
+                                  else failwith ("Anon: return type in " + x + " of " + type2string xTyp + " does not match " + type2string (teval letBody xBodyEnv)) 
     
     | Match (e1, elist) -> teval (findMatch e1 elist) env
 
