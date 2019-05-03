@@ -22,13 +22,13 @@ let rec eval (e : expr) (env : plcVal env) : plcVal =
 
     | Prim1 (op, e1) ->
       match (op, e1) with
-      | ("hd", ESeq s) -> failwith "implement me"             // need to implement and test
-      | ("tl", ESeq s) -> failwith "implement me"             // need to implement and test
+      | ("hd", List s) -> failwith "implement me"             // need to implement and test
+      | ("tl", List s) -> failwith "implement me"             // full tail wanted not tail element
       | (_, _) -> let v1 = eval e1 env in
                     match (op, v1) with
                     | ("-", IntV i) -> IntV (- i)
                     | ("!", BoolV b) -> BoolV (not b)         // fix and test ise below (might need to be Seq)
-                    | ("ise", ListV elist) -> if (List.length elist = 0) then (BoolV true) else (BoolV false)
+                    | ("ise", v) -> if (v = ListV []) then (BoolV true) else (BoolV false)
                     | ("print", v) -> printf "%s" (val2string v) 
                                       ListV []      
                     | _ -> failwith "Impossible"

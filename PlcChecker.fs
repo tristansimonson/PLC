@@ -36,7 +36,7 @@ let rec teval (e : expr) (env : plcType env) : plcType =
                                     | SeqT x -> SeqT x 
                                     | _ -> failwith ("Prim1: cannot use tl on type " + (type2string i1))
                           | "ise" -> match i1 with 
-                                     | SeqT x -> BoolT
+                                     | ListT x -> BoolT
                                      | _ -> failwith ("Prim1: cannot use ise on type " + (type2string i1))
                           | "print" -> ListT []
                           | "-" -> if (i1 = IntT) then (IntT; IntT) else failwith ("Prim1: cannot use negation on type " + (type2string i1))

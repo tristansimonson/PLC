@@ -49,6 +49,11 @@ let typeCheck e = PlcChecker.teval e []
 (* Examples in concrete syntax *)
 
 let e1 = fromString "
+ise (1,2)
+"
+run e1
+
+let e1 = fromString "
 var y = 11 ;
 fun rec f(Int x) : Bool = x <= y ;
 var y = 22 ;
