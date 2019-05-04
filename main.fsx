@@ -48,23 +48,66 @@ let typeCheck e = PlcChecker.teval e []
 
 (* Examples in concrete syntax *)
 
-let e1 = Parse.fromString "
-15
+let e1 = fromString "
+ise (1,2)
 "
 run e1
 
 let e1 = fromString "
-true
+hd (1,2,3)
 "
 run e1
 
 let e1 = fromString "
-()
+var y = 11 ;
+fun rec f(Int x) : Bool = x <= y ;
+var y = 22 ;
+f(y)
 "
 run e1
 
 let e1 = fromString "
-(6, false)[1]
+var y = true ;
+fun rec f(Bool x) : Bool = x && y ;
+var y = false ;
+f(y)
+"
+run e1
+
+let e1 = fromString "
+var y = 11 ;
+fun rec f(Int x) : [Int] = x :: y ;
+var y = 22 ;
+f(y)
+"
+run e1
+
+let e1 = fromString "
+fun rec f(Int x) : Int =
+match x with
+| 2 -> 2
+| _ -> 1
+end;
+f(2)
+"
+run e1
+
+let e1 = fromString "
+var x = 2;
+fn (Int x) => -x end
+"
+run e1
+
+let e1 = fromString "
+var x = 2;
+print x
+"
+run e1
+
+let e1 = fromString "
+var x = 2;
+var y = 1;
+y; x
 "
 run e1
 
@@ -73,19 +116,13 @@ let e1 = fromString "
 "
 run e1
 
-
 let e1 = fromString "
 print x; true
 "
 run e1
 
 let e1 = fromString "
-3::7::t
-"
-run e1
-
-let e1 = fromString "
-fn (Int x) => -x end
+3::7::[1]
 "
 run e1
 
@@ -95,37 +132,47 @@ var x = 9; x + 1
 run e1
 
 let e1 = fromString "
-fun f(Int x) = x; f(1)
+fun rec f(Int x) : Int = x; f(1)
 "
 run e1
 
 let e1 = fromString "
-match x with
-| 0 -> 1
-| _ -> -1
-end
+hd([Bool][])
 "
 run e1
 
 let e1 = fromString "
-fun rec f(Int n) : Int =
-if n <= 0 then 0
-else n + f(n-1); 
-f(5)
+tl([Bool][])
 "
 run e1
 
-let e1 = fromString "
-3+1 = 4 && 4 <= 3
+let e2 = fromString "
+var a = 5;
+var b = a + 1;
+fun rec f(Int x) : Int = x + b;
+f(3)
 "
-run e1
+run e2
 
-let e1 = fromString "
-3-1
+let ex4 = fromString "
+var y = 11 ;
+fun rec f(Int x) : Int = x + y ;
+var y = 22 ;
+f(y)
 "
-run e1
+run ex4
 
-let e1 = fromString "
-!true
+let ex1 = fromString "
+fun twice (Int -> Int f) = fn (Int x) => f(f(x)) end ;
+fun rec map (Int -> Int f) : ([Int] -> [Int]) =
+fn ([Int] s) =>
+if ise(s) then s else f(hd(s)) :: map(f)(tl(s))
+end ;
+fun square (Int x) = x * x ;
+fun inc (Int x) = x + 1 ;
+var E = ([Int] []) ;
+var s1 = map (fn (Int x) => 2*x end) (10::20::30::E) ;
+var s2 = map (twice(inc)) (s1) ;
+(s1, s2)
 "
-run e1
+run ex1

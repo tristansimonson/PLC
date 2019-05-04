@@ -137,12 +137,12 @@ Comps :                                                            /*list compon
 
 MatchExpr :                                                               /*match cases*/
     END                                { []                        }
-  | PIPE CondExpr ARROW Expr MatchExpr { List.append [($2, $4)] $5 }      /*the brackets are probably wrong*/
+  | PIPE CondExpr ARROW Expr MatchExpr { List.append [($2, $4)] $5 } 
 ;
 
 CondExpr :                                    /*values to be matched against*/
-    Expr                     { Some ($1) }    /*this might be wrong*/
-  | UNDERSCORE               { None      }    /*in 4.2 of pdf _ is None*/
+    Expr                     { Some ($1) }    
+  | UNDERSCORE               { None      }    
 ;
 
 Args:

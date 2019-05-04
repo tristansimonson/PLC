@@ -5,12 +5,6 @@ module PlcInterp
 open Absyn
 open Environ
 
-let rec findMatch (v : expr) (elist: (expr option * expr) list) : expr =
-  match v, elist with
-  | v1, [] -> failwith "Match: no match found"
-  | v1, (Some (eo), e1) :: t -> if (v1 = eo) then e1 else (findMatch v t)
-  | v1, (None, e1) :: t -> e1
-
 let rec eval (e : expr) (env : plcVal env) : plcVal =
     match e with
     | ConI i -> IntV i
@@ -28,28 +22,30 @@ let rec eval (e : expr) (env : plcVal env) : plcVal =
 
     | Prim1 (op, e1) ->
       match (op, e1) with
-      | ("hd", List elist) -> eval (List.item 1 elist) env                // do head and tail work for ESeq?
-      | ("tl", List elist) -> eval (List.item (List.length elist) elist) env
+      | ("hd", List s) -> match s with
+                          | h :: t -> eval h env
+      | ("tl", List s) -> failwith "implement me"             // full tail wanted not tail element
       | (_, _) -> let v1 = eval e1 env in
                     match (op, v1) with
                     | ("-", IntV i) -> IntV (- i)
-                    | ("!", BoolV b) -> BoolV (not b)
-                    | ("ise", ListV elist) -> if (List.length elist = 0) then (BoolV true) else (BoolV false)
-                    //| ("print", v) -> printf "%s" (val2string v)        // not sure how to handle because string    
+                    | ("!", BoolV b) -> BoolV (not b)         // fix and test ise below (might need to be Seq)
+                    | ("ise", v) -> if (v = ListV []) then (BoolV true) else (BoolV false)
+                    | ("print", v) -> printf "%s" (val2string v) 
+                                      ListV []      
                     | _ -> failwith "Impossible"
 
     | Prim2 (op, e1, e2) ->
       let v1 = eval e1 env in
       let v2 = eval e2 env in
       match (op, v1, v2) with
-      | (";", _, _) -> v2                                          // could be wrong implementation
+      | (";", _, _) -> v2                
       | ("=", _, _) -> BoolV (v1 = v2)
       | ("!=", _, _) -> BoolV (v1 <> v2)
-      | ("::", _, ListV i2) -> ListV (v1 :: i2)                    // should this return a sequence or list?
+      | ("::", _, ListV i2) -> ListV (v1 :: i2)               // need to fix/test (might be Seq type not list)
       | ("&&", BoolV i1, BoolV i2) -> BoolV (i1 && i2)
       | ("<", IntV i1, IntV i2) -> BoolV (i1 < i2)
       | ("<=", IntV i1, IntV i2) -> BoolV (i1 <= i2)
-      | ("/", IntV i1, IntV i2) -> IntV (i1 / i2)                  // floats might cause problems
+      | ("/", IntV i1, IntV i2) -> IntV (i1 / i2)            
       | ("*", IntV i1, IntV i2) -> IntV (i1 * i2)
       | ("+", IntV i1, IntV i2) -> IntV (i1 + i2)
       | ("-", IntV i1, IntV i2) -> IntV (i1 - i2)
@@ -67,13 +63,17 @@ let rec eval (e : expr) (env : plcVal env) : plcVal =
       | BoolV false -> eval e3 env
       | _ -> failwith "Impossible"
 
-    | Letrec (f, _, x, _, e1, e2) ->                               // might need additional changes
+    | Letrec (f, _, x, _, e1, e2) ->                    
       let env2 = (f, Clos(f, x, e1, env)) :: env in
       eval e2 env2
 
-    | Anon (t, s, e1) -> eval (Call(Var s, e1)) env                // not sure about this one either
+    | Anon (t, s, e1) -> let sEnv = (s, lookup env s) :: env
+                         eval e1 sEnv
 
-    | Match (e1, elist) -> eval (findMatch e1 elist) env           // probably contains errors
+    | Match (e1, elist) -> match (eval e1 env), elist with
+                           | v1, [] -> failwith "Match: no match found"
+                           | v1, (Some (eo), e1) :: t -> if (v1 = (eval eo env)) then (eval e1 env) else (eval (Match (e1, t)) env)
+                           | v1, (None, e1) :: t -> eval e1 env
 
     | Call (Var f, e1) ->
       let c = lookup env f in
