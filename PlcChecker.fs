@@ -3,6 +3,7 @@ module PlcChecker
 open Absyn
 open Environ
 open System
+open System.Web.UI.WebControls
 
 // The type checker can be seen as an interpreter that computes
 // the type of an expression instead of its value.
@@ -36,7 +37,7 @@ let rec teval (e : expr) (env : plcType env) : plcType =
                                     | _ -> failwith "implement me"
                                     | _ -> failwith ("Prim1: cannot use tl on type " + (type2string i1))
                           | "ise" -> match i1 with 
-                                     | ListT x -> BoolT
+                                     | SeqT _ -> BoolT
                                      | _ -> failwith ("Prim1: cannot use ise on type " + (type2string i1))
                           | "print" -> ListT []
                           | "-" -> if (i1 = IntT) then (IntT; IntT) else failwith ("Prim1: cannot use negation on type " + (type2string i1))
@@ -46,11 +47,8 @@ let rec teval (e : expr) (env : plcType env) : plcType =
     | Prim2 (op, e1, e2) -> let i1 = teval e1 env in
                               let i2 = teval e2 env in
                                 match op with
-                                | ";" -> (i1; i2; i2) // may be wrong
-                                | "::" -> match i2 with
-                                          | ListT [] -> (i1; i2; i1;) // might need i1 list type for third postion
-                                          | ListT (h :: t) -> if (i1 = h) then (i1; i2; i2) else failwith ("Prim2: cannot append to list of different type " + (type2string i1) + " to " + (type2string i2))
-                                          | _ -> failwith ("Prim2: append with non list type " + (type2string i2))
+                                | ";" -> (i1; i2; i2) 
+                                | "::" -> if (i2 = SeqT i1) then i2 else failwith "Prim 2 has different types"
                                 | "&&" -> if (i1 = BoolT && i1 = i2) then (BoolT; BoolT; BoolT) else failwith ("Prim2: cannot AND two non-int types " + (type2string i1) + " and " + (type2string i2))
                                 | "<=" -> if (i1 = IntT && i1 = i2) then (IntT; IntT; BoolT) else failwith ("Prim2: cannot LTE compare non-int types " + (type2string i1) + " and " + (type2string i2))
                                 | "/" -> if (i1 = IntT && i1 = i2) then (IntT; IntT; IntT) else failwith ("Prim2: cannot div non-int types " + (type2string i1) + " and " + (type2string i2))
@@ -68,14 +66,14 @@ let rec teval (e : expr) (env : plcType env) : plcType =
                                   else failwith ("Anon: return type in " + x + " of " + type2string xTyp + " does not match " + type2string (teval letBody xBodyEnv)) 
     
     | Match (e1, elist) -> teval (findMatch e1 elist) env
-
+    
     | Letrec(f, xTyp, x, rTyp, fBody, letBody) -> let fTyp = FunT(xTyp, rTyp) 
                                                   let fBodyEnv = (x, xTyp) :: (f, fTyp) :: env
                                                   let letBodyEnv = (f, fTyp) :: env
                                                   if teval fBody fBodyEnv = rTyp
                                                     then teval letBody letBodyEnv
                                                   else failwith ("Letfun: return type in " + f + " of " + type2string rTyp + " does not match " + type2string (teval fBody fBodyEnv))   
-
+   
     | If (e1, e2, e3) -> match (teval e1 env), (teval e2 env), (teval e3 env) with
                          | BoolT, t2, t3 when (t2 = t3) -> t2
                          | BoolT, t2, t3 when (t2 <> t3) -> failwith ("If: different return types " + (type2string t2) + ", " + (type2string t3))
