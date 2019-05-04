@@ -54,6 +54,11 @@ ise (1,2)
 run e1
 
 let e1 = fromString "
+hd (1,2,3)
+"
+run e1
+
+let e1 = fromString "
 var y = 11 ;
 fun rec f(Int x) : Bool = x <= y ;
 var y = 22 ;

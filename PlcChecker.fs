@@ -29,11 +29,11 @@ let rec teval (e : expr) (env : plcType env) : plcType =
 
     | Prim1 (op, e1) -> let i1 = teval e1 env in
                           match op with
-                          | "hd" -> match i1 with 
-                                    | SeqT x -> x 
+                          | "hd" -> match e1 with 
+                                    | _ -> IntT 
                                     | _ -> failwith ("Prim1: cannot use hd on type " + (type2string i1))
                           | "tl" -> match i1 with 
-                                    | SeqT x -> SeqT x 
+                                    | _ -> failwith "implement me"
                                     | _ -> failwith ("Prim1: cannot use tl on type " + (type2string i1))
                           | "ise" -> match i1 with 
                                      | ListT x -> BoolT

@@ -22,7 +22,8 @@ let rec eval (e : expr) (env : plcVal env) : plcVal =
 
     | Prim1 (op, e1) ->
       match (op, e1) with
-      | ("hd", List s) -> failwith "implement me"             // need to implement and test
+      | ("hd", List s) -> match s with
+                          | h :: t -> eval h env
       | ("tl", List s) -> failwith "implement me"             // full tail wanted not tail element
       | (_, _) -> let v1 = eval e1 env in
                     match (op, v1) with
