@@ -21,18 +21,24 @@ let rec eval (e : expr) (env : plcVal env) : plcVal =
       | _      -> failwith ("Value of variable _" + x + "_ is not first-order.")
 
     | Prim1 (op, e1) ->
-      match (op, e1) with
-      | ("hd", List s) -> match s with
-                          | h :: t -> eval h env
-      | ("tl", List s) -> failwith "implement me"             // full tail wanted not tail element
-      | (_, _) -> let v1 = eval e1 env in
-                    match (op, v1) with
-                    | ("-", IntV i) -> IntV (- i)
-                    | ("!", BoolV b) -> BoolV (not b)         // fix and test ise below (might need to be Seq)
-                    | ("ise", v) -> if (v = ListV []) then (BoolV true) else (BoolV false)
-                    | ("print", v) -> printf "%s" (val2string v) 
-                                      ListV []      
-                    | _ -> failwith "Impossible"
+      let v1 = eval e1 env
+      match (op, v1) with
+      | ("hd", SeqV v) -> match v with
+                           | [] -> failwith "Sequence is empty!"
+                           | h::t ->  h 
+                      // need to implement and test
+                  // full tail wanted not tail element
+      | ("tl", SeqV v) -> match v with
+                           | [] -> failwith "Sequence is empty!"
+                           | h::t ->  SeqV t
+      | ("-", IntV i) -> IntV (- i)
+      | ("!", BoolV b) -> BoolV (not b)         // fix and test ise below (might need to be Seq)
+      | ("ise", SeqV v) -> if (v = []) then (BoolV true) else (BoolV false)
+      | ("print", v) -> printf "%s" (val2string v) 
+                        ListV []      
+      | _ -> failwith "Impossible"                    
+      
+                    
 
     | Prim2 (op, e1, e2) ->
       let v1 = eval e1 env in
@@ -41,7 +47,7 @@ let rec eval (e : expr) (env : plcVal env) : plcVal =
       | (";", _, _) -> v2                
       | ("=", _, _) -> BoolV (v1 = v2)
       | ("!=", _, _) -> BoolV (v1 <> v2)
-      | ("::", _, ListV i2) -> ListV (v1 :: i2)               // need to fix/test (might be Seq type not list)
+      | ("::", _, SeqV v) -> SeqV (List.append [v1] v) 
       | ("&&", BoolV i1, BoolV i2) -> BoolV (i1 && i2)
       | ("<", IntV i1, IntV i2) -> BoolV (i1 < i2)
       | ("<=", IntV i1, IntV i2) -> BoolV (i1 <= i2)
@@ -49,7 +55,7 @@ let rec eval (e : expr) (env : plcVal env) : plcVal =
       | ("*", IntV i1, IntV i2) -> IntV (i1 * i2)
       | ("+", IntV i1, IntV i2) -> IntV (i1 + i2)
       | ("-", IntV i1, IntV i2) -> IntV (i1 - i2)
-      | _   -> failwith "Impossible"
+      | _   -> failwith "I"
 
     | Let (x, e1, e2) ->
       let v = eval e1 env in
