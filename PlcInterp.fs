@@ -26,13 +26,11 @@ let rec eval (e : expr) (env : plcVal env) : plcVal =
       | ("hd", SeqV v) -> match v with
                            | [] -> failwith "Sequence is empty!"
                            | h::t ->  h 
-                      // need to implement and test
-                  // full tail wanted not tail element
       | ("tl", SeqV v) -> match v with
                            | [] -> failwith "Sequence is empty!"
                            | h::t ->  SeqV t
       | ("-", IntV i) -> IntV (- i)
-      | ("!", BoolV b) -> BoolV (not b)         // fix and test ise below (might need to be Seq)
+      | ("!", BoolV b) -> BoolV (not b)   
       | ("ise", SeqV v) -> if (v = []) then (BoolV true) else (BoolV false)
       | ("print", v) -> printf "%s" (val2string v) 
                         ListV []      

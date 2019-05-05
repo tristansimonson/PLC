@@ -30,11 +30,11 @@ let rec teval (e : expr) (env : plcType env) : plcType =
 
     | Prim1 (op, e1) -> let i1 = teval e1 env in
                           match op with
-                          | "hd" -> match e1 with 
-                                    | _ -> IntT 
+                          | "hd" -> match i1 with 
+                                    | SeqT x -> x 
                                     | _ -> failwith ("Prim1: cannot use hd on type " + (type2string i1))
                           | "tl" -> match i1 with 
-                                    | _ -> failwith "implement me"
+                                    | SeqT x -> SeqT x 
                                     | _ -> failwith ("Prim1: cannot use tl on type " + (type2string i1))
                           | "ise" -> match i1 with 
                                      | SeqT _ -> BoolT
@@ -91,4 +91,3 @@ let rec teval (e : expr) (env : plcType env) : plcType =
                                     with
                                       | :? System.ArgumentException -> failwith ("Item: index out of range with position " + string n)
                       | _ -> failwith ("Item: not a list type " + type2string (teval e1 env))
-
