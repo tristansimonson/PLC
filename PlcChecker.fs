@@ -60,10 +60,9 @@ let rec teval (e : expr) (env : plcType env) : plcType =
                                 | "<" -> if (i1 = IntT && i1 = i2) then (IntT; IntT; BoolT) else failwith ("Prim2: cannot LT compare non-int types " + (type2string i1) + " and " + (type2string i2))
                                 | _   -> failwith ("Prim2: undefined binary operator " + op)
     
-    | Anon (xTyp, x , letBody) -> let xBodyEnv = (x, xTyp) :: env
-                                  if teval letBody xBodyEnv = xTyp
-                                    then xTyp
-                                  else failwith ("Anon: return type in " + x + " of " + type2string xTyp + " does not match " + type2string (teval letBody xBodyEnv)) 
+    | Anon (xTyp, x , letBody) -> let xBodyEnv = (x, xTyp) :: env in
+                                    let retType = (teval letBody xBodyEnv) in
+                                      FunT (xTyp, retType)
     
     | Match (e1, elist) -> teval (findMatch e1 elist) env
     
@@ -79,11 +78,11 @@ let rec teval (e : expr) (env : plcType env) : plcType =
                          | BoolT, t2, t3 when (t2 <> t3) -> failwith ("If: different return types " + (type2string t2) + ", " + (type2string t3))
                          | t1, t2, t3 -> failwith ("If: first expression not bool: " + (type2string t1))
     
-    | Call(Var f, eArg) -> match lookup env f with
+    | Call(f, eArg) -> match (teval f env) with
                            | FunT(xTyp, rTyp) -> if teval eArg env = xTyp 
                                                    then rTyp 
                                                  else failwith ("Call: wrong argument type " + type2string (teval eArg env))
-                           | _ -> failwith ("Call: unknown function " + type2string (lookup env f))
+                           | _ -> failwith ("Call: unknown function " + type2string (teval f env))
     
     | Item (n, e1) -> match teval e1 env with
                       | ListT vs -> try 

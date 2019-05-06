@@ -10,88 +10,76 @@ let rec eval (e : expr) (env : plcVal env) : plcVal =
     | ConI i -> IntV i
     | ConB b -> BoolV b
     | ESeq _ -> SeqV []
+    | Var x  -> lookup env x
 
-    | Var x  ->
-      let v = lookup env x in
-      match v with
-      | IntV  _ -> v
-      | BoolV _ -> v
-      | ListV  _ -> v
-      | SeqV _ -> v
-      | _      -> failwith ("Value of variable _" + x + "_ is not first-order.")
+    | Prim1 (op, e1) -> let v1 = eval e1 env
+                        match (op, v1) with
+                        | ("hd", SeqV v) -> match v with
+                                            | [] -> failwith "Prim1: sequence is empty"
+                                            | h::t ->  h 
+                        | ("tl", SeqV v) -> match v with
+                                            | [] -> failwith "Prim1: sequence is empty"
+                                            | h::t ->  SeqV t
+                        | ("-", IntV i) -> IntV (- i)
+                        | ("!", BoolV b) -> BoolV (not b)   
+                        | ("ise", SeqV v) -> if (v = []) then (BoolV true) else (BoolV false)
+                        | ("print", v) -> printf "%s" (val2string v) 
+                                          ListV []      
+                        | _ -> failwith "Prim1: Impossible"                    
 
-    | Prim1 (op, e1) ->
-      let v1 = eval e1 env
-      match (op, v1) with
-      | ("hd", SeqV v) -> match v with
-                           | [] -> failwith "Sequence is empty!"
-                           | h::t ->  h 
-      | ("tl", SeqV v) -> match v with
-                           | [] -> failwith "Sequence is empty!"
-                           | h::t ->  SeqV t
-      | ("-", IntV i) -> IntV (- i)
-      | ("!", BoolV b) -> BoolV (not b)   
-      | ("ise", SeqV v) -> if (v = []) then (BoolV true) else (BoolV false)
-      | ("print", v) -> printf "%s" (val2string v) 
-                        ListV []      
-      | _ -> failwith "Impossible"                    
-      
-                    
+    | Prim2 (op, e1, e2) -> let v1 = eval e1 env in
+                              let v2 = eval e2 env in
+                                match (op, v1, v2) with
+                                | (";", _, _) -> v2                
+                                | ("=", _, _) -> BoolV (v1 = v2)
+                                | ("!=", _, _) -> BoolV (v1 <> v2)
+                                | ("::", _, SeqV v) -> SeqV (List.append [v1] v) 
+                                | ("&&", BoolV i1, BoolV i2) -> BoolV (i1 && i2)
+                                | ("<", IntV i1, IntV i2) -> BoolV (i1 < i2)
+                                | ("<=", IntV i1, IntV i2) -> BoolV (i1 <= i2)
+                                | ("/", IntV i1, IntV i2) -> IntV (i1 / i2)            
+                                | ("*", IntV i1, IntV i2) -> IntV (i1 * i2)
+                                | ("+", IntV i1, IntV i2) -> IntV (i1 + i2)
+                                | ("-", IntV i1, IntV i2) -> IntV (i1 - i2)
+                                | _   -> failwith "Prim2: Impossible"
 
-    | Prim2 (op, e1, e2) ->
-      let v1 = eval e1 env in
-      let v2 = eval e2 env in
-      match (op, v1, v2) with
-      | (";", _, _) -> v2                
-      | ("=", _, _) -> BoolV (v1 = v2)
-      | ("!=", _, _) -> BoolV (v1 <> v2)
-      | ("::", _, SeqV v) -> SeqV (List.append [v1] v) 
-      | ("&&", BoolV i1, BoolV i2) -> BoolV (i1 && i2)
-      | ("<", IntV i1, IntV i2) -> BoolV (i1 < i2)
-      | ("<=", IntV i1, IntV i2) -> BoolV (i1 <= i2)
-      | ("/", IntV i1, IntV i2) -> IntV (i1 / i2)            
-      | ("*", IntV i1, IntV i2) -> IntV (i1 * i2)
-      | ("+", IntV i1, IntV i2) -> IntV (i1 + i2)
-      | ("-", IntV i1, IntV i2) -> IntV (i1 - i2)
-      | _   -> failwith "I"
+    | Let (x, e1, e2) -> let v = eval e1 env in
+                           let env2 = (x, v) :: env in
+                             eval e2 env2
 
-    | Let (x, e1, e2) ->
-      let v = eval e1 env in
-      let env2 = (x, v) :: env in
-      eval e2 env2
+    | If (e1, e2, e3) -> let v1 = eval e1 env in
+                           match v1 with
+                           | BoolV true  -> eval e2 env
+                           | BoolV false -> eval e3 env
+                           | _ -> failwith "If: Impossible"
 
-    | If (e1, e2, e3) ->
-      let v1 = eval e1 env in
-      match v1 with
-      | BoolV true  -> eval e2 env
-      | BoolV false -> eval e3 env
-      | _ -> failwith "Impossible"
+    | Letrec (f, _, x, _, e1, e2) -> let env2 = (f, Clos(f, x, e1, env)) :: env in
+                                       eval e2 env2
 
-    | Letrec (f, _, x, _, e1, e2) ->                    
-      let env2 = (f, Clos(f, x, e1, env)) :: env in
-      eval e2 env2
-
-    | Anon (t, s, e1) -> let sEnv = (s, lookup env s) :: env
-                         eval e1 sEnv
+    | Anon (t, s, e1) -> Clos ("", s, e1, env)
 
     | Match (e1, elist) -> match (eval e1 env), elist with
                            | v1, [] -> failwith "Match: no match found"
                            | v1, (Some (eo), e1) :: t -> if (v1 = (eval eo env)) then (eval e1 env) else (eval (Match (e1, t)) env)
                            | v1, (None, e1) :: t -> eval e1 env
 
-    | Call (Var f, e1) ->
-      let c = lookup env f in
-      match c with
-      | Clos (f, x, e2, fenv) ->
-        let v = eval e1 env in
-        let env1 = (x, v) :: (f, c) :: fenv in
-        eval e2 env1
-      | _ -> failwith "eval Call: not a function"
-    | Call _ -> failwith "eval Call: not first-order function"
+    | Call (f, e1) -> match f with
+                      | Var v -> let v1 = lookup env v in
+                                   match v1 with
+                                   | Clos (f, x, ex, fEnv) -> let v = eval e1 env in
+                                                                let closEnv = (x, v) :: (f, v1) :: fEnv in
+                                                                  eval ex closEnv
+                                   | _ -> failwith "Call: inner eval var match wrong type"
+                      | Call (_, _) -> let v1 = eval f env in
+                                         match v1 with
+                                         | Clos (f, x, ex, fEnv) -> let v = eval e1 env in
+                                                                      let closEnv = (x, v) :: (f, v1) :: fEnv in
+                                                                        eval ex closEnv
+                                         | _ -> failwith "Call: inner eval call match wrong type"
+                      | _ -> failwith "Call: not first-order function"
 
     | List es -> ListV (List.map (fun e -> eval e env) es)
 
-    | Item (n, e1) ->
-      match eval e1 env with
-      | ListV vs -> List.item (n - 1) vs
-      | _ -> failwith "Impossible"
+    | Item (n, e1) -> match eval e1 env with
+                      | ListV vs -> List.item (n - 1) vs
+                      | _ -> failwith "Item: Impossible"

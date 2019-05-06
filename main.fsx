@@ -45,41 +45,55 @@ let run e = printfn "\nResult is  %s\n" (Plc.run e)   // execution function
 TestAux.testAll Test.cases
 
 let typeCheck e = PlcChecker.teval e []
+let interp e = PlcInterp.eval e []
 
 (* Examples in concrete syntax *)
 
 let e1 = fromString "
-ise (1,2)
+var e = ([Bool] []);
+true::false::e
 "
+typeCheck e1
+interp e1
 run e1
 
 let e1 = fromString "
-hd (1,2,3)
+fun f(Int x, Int y, Int z) = x - y * z ; f(5,4,2)
 "
+typeCheck e1
+interp e1
 run e1
 
 let e1 = fromString "
-var y = 11 ;
-fun rec f(Int x) : Bool = x <= y ;
-var y = 22 ;
-f(y)
+fun f (Int x) = fn (Int y) => x+y end; f(3)(4)
 "
+typeCheck e1
+interp e1
 run e1
 
 let e1 = fromString "
-var y = true ;
-fun rec f(Bool x) : Bool = x && y ;
-var y = false ;
-f(y)
+hd (1 :: 2 :: ([Int][]))
 "
+typeCheck e1
+interp e1
 run e1
 
 let e1 = fromString "
-var y = 11 ;
-fun rec f(Int x) : [Int] = x :: y ;
-var y = 22 ;
-f(y)
+var f = fn (Int x) => x end; f(10)
 "
+typeCheck e1
+interp e1
+run e1
+
+let e1 = fromString "
+fun rec map ((Int -> Int) f) : ([Int] -> [Int]) =
+      fn ([Int] l) =>
+        if ise(l) then l else f(hd(l)) :: map(f)(tl(l))
+      end ;
+    map (fn (Int x) => 2*x end) (10::20::30::([Int] []))
+"
+typeCheck e1
+interp e1
 run e1
 
 let e1 = fromString "
@@ -90,18 +104,24 @@ match x with
 end;
 f(2)
 "
+typeCheck e1
+interp e1
 run e1
 
 let e1 = fromString "
 var x = 2;
 fn (Int x) => -x end
 "
+typeCheck e1
+interp e1
 run e1
 
 let e1 = fromString "
-var x = 2;
-print x
+var a = (3,4);
+a[1] < a[2]
 "
+typeCheck e1
+interp e1
 run e1
 
 let e1 = fromString "
@@ -109,41 +129,29 @@ var x = 2;
 var y = 1;
 y; x
 "
+typeCheck e1
+interp e1
 run e1
 
 let e1 = fromString "
-([Bool][])
+var x = 5; 1 + {var tmp = 9; x + x}
 "
-run e1
-
-let e1 = fromString "
-print x; true
-"
-run e1
-
-let e1 = fromString "
-3::7::[1]
-"
-run e1
-
-let e1 = fromString "
-var x = 9; x + 1
-"
+typeCheck e1
+interp e1
 run e1
 
 let e1 = fromString "
 fun rec f(Int x) : Int = x; f(1)
 "
-run e1
-
-let e1 = fromString "
-hd([Bool][])
-"
+typeCheck e1
+interp e1
 run e1
 
 let e1 = fromString "
 tl([Bool][])
 "
+typeCheck e1
+interp e1
 run e1
 
 let e2 = fromString "
