@@ -60,7 +60,7 @@ let rec teval (e : expr) (env : plcType env) : plcType =
                                 | "<" -> if (i1 = IntT && i1 = i2) then (IntT; IntT; BoolT) else failwith ("Prim2: cannot LT compare non-int types " + (type2string i1) + " and " + (type2string i2))
                                 | _   -> failwith ("Prim2: undefined binary operator " + op)
     
-    | Anon (xTyp, x , letBody) -> let xBodyEnv = (x, xTyp) :: env in
+    | Anon (xTyp, x, letBody) -> let xBodyEnv = (x, xTyp) :: env in
                                     let retType = (teval letBody xBodyEnv) in
                                       FunT (xTyp, retType)
     
