@@ -44,8 +44,8 @@ let rec eval (e : expr) (env : plcVal env) : plcVal =
                                 | _   -> failwith "Prim2: Impossible"
 
     | Let (x, e1, e2) -> let v = eval e1 env in
-                           let env2 = (x, v) :: env in
-                             eval e2 env2
+                           let letBodyEnv = (x, v) :: env in
+                             eval e2 letBodyEnv
 
     | If (e1, e2, e3) -> let v1 = eval e1 env in
                            match v1 with
@@ -53,8 +53,8 @@ let rec eval (e : expr) (env : plcVal env) : plcVal =
                            | BoolV false -> eval e3 env
                            | _ -> failwith "If: Impossible"
 
-    | Letrec (f, _, x, _, e1, e2) -> let env2 = (f, Clos(f, x, e1, env)) :: env in
-                                       eval e2 env2
+    | Letrec (f, _, x, _, e1, e2) -> let recBodyEnv = (f, Clos(f, x, e1, env)) :: env in
+                                       eval e2 recBodyEnv
 
     | Anon (t, s, e1) -> Clos ("", s, e1, env)
 

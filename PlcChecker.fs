@@ -61,8 +61,8 @@ let rec teval (e : expr) (env : plcType env) : plcType =
                                 | _   -> failwith ("Prim2: undefined binary operator " + op)
     
     | Anon (xTyp, x, letBody) -> let xBodyEnv = (x, xTyp) :: env in
-                                    let retType = (teval letBody xBodyEnv) in
-                                      FunT (xTyp, retType)
+                                    let rType = (teval letBody xBodyEnv) in
+                                      FunT (xTyp, rType)
     
     | Match (e1, elist) -> teval (findMatch e1 elist) env
     
